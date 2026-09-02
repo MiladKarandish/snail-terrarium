@@ -81,6 +81,21 @@ cable_notch_w     = mm_cable_od + 3;
 cable_notch_h     = 6;
 lid_pos_z         = ch_floor + ch_inner_h;
 
+// ── Cut-bottle vessel (replaces the printed chamber) ─────────
+// The chamber is a PET bottle cut into a cup. Free, watertight, and
+// transparent so the level is visible. Use a STILL water / juice
+// bottle: carbonated bases are petaloid (5 domed feet) and the
+// atomiser would sit tilted.
+// The lid does not need to seal here - water sits at 66.5 mm and the
+// lid at the cut, so the joint is never wet. Only the bottle-neck
+// socket seals.
+vessel_od         = 90;    // MEASURE bottle OD at the cut (1.5 L ~ 88-92)
+vessel_cut_h      = 120;   // cut this high above the inside floor
+skirt_h           = 14;
+skirt_wall        = 2.0;
+skirt_slop        = 5;     // cone self-centres over od-0 .. od+slop
+plate_t           = 3.0;
+
 // ── Reservoir bottle ─────────────────────────────────────────
 bottle_ml         = 500;   // ~25 days at 20 ml/day
 bottle_body_d     = 66;    // ASSUMED 0.5 L PET body diameter - MEASURE

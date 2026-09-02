@@ -121,7 +121,55 @@ Two things make it trustworthy rather than decorative:
 The control is what caught D5: a 17 mm³ collision, where the rim area predicted
 ~1100 mm³, is what revealed the seat was only 0.05 mm wide.
 
-## D8 — A jar could replace the chamber entirely.
+## D8 — The chamber is a cut PET bottle.
+
+A real quote settled this: **2.44 M toman for the 83.6 g chamber**, ~29,000 per
+gram. That is far above material cost, so the price is machine time, and time on
+FDM tracks **layer count** — the chamber was 126.5 mm tall at 100 um, i.e. 1,265
+layers.
+
+Printing a plain water container at that rate is the worst possible use of the
+budget. It holds water and locates the module; **a PET bottle cut into a cup does
+both for nothing**, and is more watertight than any FDM part plus transparent, so
+the level is visible.
+
+```
+                             printed   PETG    height
+  original box               293 cm3   373 g   187.5 mm   (quoted 4 M)
+  printed cylinder + lid      99 cm3   126 g   120 mm
+  cut bottle + vessel_lid     40 cm3    51 g    66 mm
+```
+
+Two constraints that are easy to get wrong:
+
+- **Not a saucer.** A bird waterer's dish is ~15 mm deep. This module is 45 mm
+  tall and wants 20-75 mm *above* that, so the water is ~66 mm deep and the
+  vessel is a bottle cut at ~120 mm.
+- **Not a carbonated bottle.** Soda bottle bases are petaloid - five domed feet -
+  so the atomiser would sit tilted. Use a still water, juice or milk bottle,
+  which have near-flat bases.
+
+The lid's skirt is a shallow **cone**, self-centring over a 5 mm spread of
+diameters, because bottle diameters vary by brand and the user should not have
+to match a number exactly. It needs no seal: water sits at 66.5 mm and the joint
+is at 120 mm, so it is never wet. Only the bottle-neck socket seals, via a
+printed TPU washer.
+
+## D9 — Wall thickness is a multiple of the nozzle, not a strength number.
+
+Hydrostatic load here is trivial - 0.02 MPa hoop stress against PETG's ~50 MPa.
+Wall thickness is set by **watertightness**, and watertightness is set by
+perimeters, which a print service's calculator does not expose.
+
+At 2 perimeters on a 0.4 mm nozzle, a 2.0 mm wall is 0.8 mm of shell wrapped
+around 1.2 mm of 20 % infill - a porous sandwich that weeps no matter what infill
+is set to. **1.6 mm is exactly 4 extrusions**, so the wall is 100 % shell.
+Thinner is both cheaper and more reliable. Keep it a multiple of 0.4.
+
+For the same reason, ask for **200 um layers, not 100**: half the layer count, and
+half as many layer interfaces, every one of which is a potential leak path.
+
+## D10 — A jar would also work.
 
 The chamber is still two thirds of the print. It does nothing clever: it holds
 water and locates the module. **Any watertight container with a >=70 mm bore and
@@ -137,7 +185,7 @@ Not adopted yet only because it needs a specific container to design the lid
 around. If a suitable jar is available, that is the cheapest version of this
 build by a wide margin.
 
-## D9 — Open questions
+## D11 — Open questions
 
 - **Water level datum.** The spec says "effective water level 20–75 mm" without
   stating the datum. Read here as *above the module's top face* (consistent with

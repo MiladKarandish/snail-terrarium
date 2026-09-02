@@ -4,7 +4,7 @@ import re, math, subprocess, sys, pathlib, trimesh
 
 CAD = pathlib.Path(__file__).parent
 STL = CAD / "stl"; STL.mkdir(exist_ok=True)
-PARTS = ("chamber", "lid", "gasket")
+PARTS = ("vessel_lid", "gasket", "chamber", "lid")
 
 def scad(src, out, extra=()):
     # OpenSCAD writes nothing for an empty result, so a stale file from a
@@ -75,6 +75,27 @@ for part in PARTS:
     chk(f"{part}: fits a 250 mm bed", max(e) <= 250,
         f"{e[0]:.0f} x {e[1]:.0f} x {e[2]:.0f} mm, {m.volume/1000:5.1f} cm3 "
         f"(~{m.volume/1000*1.27:.0f} g)")
+
+# ── cut-bottle vessel lid ────────────────────────────────────────
+sp_len = P["vessel_cut_h"] - P["water_level"]
+chk("standpipe reaches the level", sp_len > 20,
+    f"{sp_len:.1f} mm from the cut down to the water")
+chk("skirt tolerates bottle variation", P["skirt_slop"] >= 4,
+    f"self-centres over {P['vessel_od']:.0f}-{P['vessel_od']+P['skirt_slop']:.0f} mm")
+fog_off = -(P["vessel_od"]/2 - P["fog_port_d"]/2 - 6)
+vr = P["vessel_od"]/2 - 7
+worst_sp = min(math.hypot(vr*math.cos(math.radians(i*360/P["vent_n"])) - P["sp_offset"],
+                          vr*math.sin(math.radians(i*360/P["vent_n"])))
+               for i in range(int(P["vent_n"]))) - P["sp_od"]/2 - P["vent_d"]/2
+worst_fg = min(math.hypot(vr*math.cos(math.radians(i*360/P["vent_n"])) - fog_off,
+                          vr*math.sin(math.radians(i*360/P["vent_n"])))
+               for i in range(int(P["vent_n"]))) - P["fog_port_d"]/2 - P["fog_boss_wall"] - P["vent_d"]/2
+chk("vents clear standpipe and fog port", min(worst_sp, worst_fg) >= 1.0,
+    f"{min(worst_sp, worst_fg):.1f} mm closest approach")
+chk("fog port sits over the vessel mouth",
+    abs(fog_off) + P["fog_port_d"]/2 + P["fog_boss_wall"] <= P["vessel_od"]/2,
+    f"outer edge {abs(fog_off) + P['fog_port_d']/2 + P['fog_boss_wall']:.1f} mm "
+    f"vs {P['vessel_od']/2:.0f} mm mouth radius")
 
 # ── boolean interference, with a positive control ────────────────
 def interf(drop):
