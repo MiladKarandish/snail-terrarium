@@ -6,36 +6,44 @@ rather than re-deriving it.
 
 ---
 
-## D1 — No reservoir. The chamber *is* the reservoir.
+## D1 — Mariotte reservoir, chosen on cost.
 
-**Settled by:** the module's own spec — **effective water level 20–75 mm**.
+**Settled by:** a 4 M toman quote for the reservoir-less design.
 
-The original plan was an inverted-barometric (Mariotte / chicken-waterer)
-reservoir to hold a constant level. That solves *"maintain a precise depth while
-consuming water quickly."* Neither half of that premise survived checking:
+The wide 20–75 mm band made a plain chamber *possible* — hold ~445 mL across the
+band and refill fortnightly. But possible is not cheap. Sizing a vessel by
+`footprint x band` meant a 96 x 96 x 187.5 mm box: **293 cm3, ~373 g of PETG.**
 
-**Consumption is tiny.** A 47 L tank at 22 °C / 80 %RH holds ~15.5 g/m³ of
-vapour; room air at 50 %RH holds ~9.7. At ~2.7 m³/day of air exchange the tank
-loses `2.7 × 5.8 ≈ 16 mL/day`, plus ~1 mL/day passive. Fog that condenses on
-glass and duct runs back into the substrate — it stays in the system. So the
-module consumes roughly **20 mL/day**, and at 550 mL/h that is **~2 minutes of
-runtime per day**.
+An inverted-bottle (Mariotte / chicken-waterer) reservoir holds the level
+**constant**, which changes what the chamber is for. Two consequences, both
+saving material:
 
-**The tolerance band is wide.** 20–75 mm is a **55 mm** window. A 90 × 90 mm
-chamber releases 445 mL across that band:
+1. **Park the level at the bottom of the band, not the top.** Nothing has to
+   drift, so the level sits at 25 mm above the module instead of filling to 73.
+   The water column drops from 118 mm to **68.5 mm**.
+2. **Capacity moves into the bottle.** The chamber no longer stores anything, so
+   its footprint is set only by the 45 mm module — a **74 mm bore**, cylindrical,
+   because a cylinder needs the least wall for a given volume.
 
 ```
-81 cm² × 5.5 cm = 445 mL  ÷  20 mL/day  ≈  22 days between refills
+                      volume    PETG     refill
+  plain chamber       293 cm3   373 g    22 days
+  bottle + siphon     134 cm3   170 g    25 days   (0.5 L bottle)
 ```
 
-So the level may simply drift down the band between fortnightly refills. That
-deletes the bottle, the shroud, the standpipe, the level shims, every seal, and
-the tower height needed to stack a bottle above the chamber.
+**~55 % less material for a longer refill interval.** The bottle is free,
+transparent so the level is visible, and cannot leak the way a printed vessel can.
 
-> Interim resellers of a *different* OEM module quoted "4 to 5 cm, do not exceed
-> 5 cm" — a 10 mm band, which **would** have required regulation. The reservoir
-> was correct right up until the real datasheet arrived. If the module is ever
-> swapped, re-check this number first: it is the hinge the whole design turns on.
+> How it regulates: the standpipe hangs from the lid, its bottom opening at the
+> target level. Water leaves the bottle until it seals that opening; air can then
+> no longer enter, so flow stops. As water is consumed the level drops, air
+> bubbles up the standpipe, and more water flows out. **The chamber must stay
+> vented** — the lid's air holes are not optional, or atmospheric pressure cannot
+> act on the water surface and the siphon stalls.
+
+> The standpipe is offset 16 mm from centre so it does not sit directly over the
+> atomising disc. Free area past it is 5.5x the fog port's, so the plume is not
+> choked.
 
 ## D2 — Nothing mounts on the lid.
 
@@ -113,7 +121,23 @@ Two things make it trustworthy rather than decorative:
 The control is what caught D5: a 17 mm³ collision, where the rim area predicted
 ~1100 mm³, is what revealed the seat was only 0.05 mm wide.
 
-## D8 — Open questions
+## D8 — A jar could replace the chamber entirely.
+
+The chamber is still two thirds of the print. It does nothing clever: it holds
+water and locates the module. **Any watertight container with a >=70 mm bore and
+>=130 mm depth would do the same job for near-nothing**, leaving only the
+lid/standpipe assembly to print:
+
+```
+  chamber + lid + gasket    134 cm3   170 g
+  lid + gasket only          47 cm3    59 g     ~65 % less again
+```
+
+Not adopted yet only because it needs a specific container to design the lid
+around. If a suitable jar is available, that is the cheapest version of this
+build by a wide margin.
+
+## D9 — Open questions
 
 - **Water level datum.** The spec says "effective water level 20–75 mm" without
   stating the datum. Read here as *above the module's top face* (consistent with
