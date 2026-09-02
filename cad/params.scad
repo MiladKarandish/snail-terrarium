@@ -25,22 +25,22 @@ water_max         = 75;
 // drops from 118 mm to 68.5 mm, and the chamber shrinks with it.
 mm_recess_d       = 1.5;
 module_top        = mm_module_h - mm_recess_d;
-water_hold        = 25;    // held this far above the module top
+water_hold        = 23;    // 3 mm above the 20 mm minimum
 water_level       = module_top + water_hold;
-fog_headspace     = 55;
+fog_headspace     = 50;
 
 // ── Chamber (cylindrical: least wall for a given volume) ──────
-ch_id             = 74;    // must clear the 45 mm module + fog path
-ch_wall           = 2.5;
+ch_id             = 72;    // 45 mm module + standpipe clearance
+ch_wall           = 2.0;   // 5 perimeters at 0.4 mm: watertight
 ch_floor          = 3.0;
 ch_od             = ch_id + 2*ch_wall;
 ch_inner_h        = water_level + fog_headspace;
 
 // ── Fog outlet ───────────────────────────────────────────────
-fog_port_d        = 28;
-fog_port_z        = water_level + 26;
+fog_port_d        = 25;    // smaller port = lower chamber = fewer layers
+fog_port_z        = water_level + 23;
 fog_boss_len      = 10;
-fog_boss_wall     = 2.5;
+fog_boss_wall     = 2.0;
 
 // ── Mariotte standpipe ───────────────────────────────────────
 // Its BOTTOM OPENING sets the water level. Water leaves the bottle
@@ -48,7 +48,7 @@ fog_boss_wall     = 2.5;
 // flow stops. The level is independent of how full the bottle is.
 // The bore is uniform so the lid prints without a single overhang.
 sp_bore           = 28.6;  // PCO-1881 neck (27.4 mm) + clearance
-sp_wall           = 2.5;
+sp_wall           = 2.0;
 sp_od             = sp_bore + 2*sp_wall;
 sp_offset         = 16;    // off-centre, clear of the disc's plume
 sp_socket_depth   = 18;    // how far the bottle neck inserts
