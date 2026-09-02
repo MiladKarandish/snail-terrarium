@@ -31,9 +31,18 @@ fog_headspace     = 50;
 
 // ── Chamber (cylindrical: least wall for a given volume) ──────
 ch_id             = 72;    // 45 mm module + standpipe clearance
-ch_wall           = 2.0;   // 5 perimeters at 0.4 mm: watertight
+ch_wall           = 1.6;   // EXACTLY 4 perimeters at a 0.4 mm nozzle, so the
+                           // wall is 100% shell with no infill inside it.
+                           // A thicker wall is WORSE: at 2 perimeters a 2.0 mm
+                           // wall is 0.8 mm shell + 1.2 mm of 20% infill, which
+                           // weeps. Keep this a multiple of 0.4.
 ch_floor          = 3.0;
 ch_od             = ch_id + 2*ch_wall;
+// A 1.6 mm wall leaves too narrow a ledge for the lid, so thicken just
+// the top few mm. Costs ~3 cm3 and stiffens the rim of a thin tube.
+ch_flange_w       = 3.0;
+ch_flange_h       = 4.0;
+ch_flange_od      = ch_od + 2*ch_flange_w;
 ch_inner_h        = water_level + fog_headspace;
 
 // ── Fog outlet ───────────────────────────────────────────────
@@ -48,7 +57,7 @@ fog_boss_wall     = 2.0;
 // flow stops. The level is independent of how full the bottle is.
 // The bore is uniform so the lid prints without a single overhang.
 sp_bore           = 28.6;  // PCO-1881 neck (27.4 mm) + clearance
-sp_wall           = 2.0;
+sp_wall           = 1.6;  // 4 perimeters, same reason
 sp_od             = sp_bore + 2*sp_wall;
 sp_offset         = 16;    // off-centre, clear of the disc's plume
 sp_socket_depth   = 18;    // how far the bottle neck inserts
@@ -65,7 +74,7 @@ lid_t             = 4.0;
 lid_spigot_h      = 5.0;
 lid_fit           = 0.30;
 lid_finger_d      = 20;
-lid_rim_seat      = (ch_od - ch_id)/2;
+lid_rim_seat      = (ch_flange_od - ch_id)/2;
 vent_d            = 5;
 vent_n            = 5;
 cable_notch_w     = mm_cable_od + 3;
