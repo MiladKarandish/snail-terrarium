@@ -68,7 +68,52 @@ teardrop profile self-supports, so the chamber prints upright with **zero
 support material** — cheaper from a service and no scarring inside a vessel that
 has to stay clean.
 
-## D5 — Open questions
+## D5 — The lid seats on the rim, and prints upside down.
+
+Two failed attempts are worth recording, because both looked fine on screen.
+
+**A rebate is not a seat.** Cutting a lid rebate into a 3 mm wall leaves a ledge
+only `lid_clear` wide — 0.35 mm. A flush drop-in lid resting on that would fall
+into the chamber. The seat has to be the **rim** itself: a full 3 mm annulus.
+
+**Do not seat on a printed overhang.** A plate-on-spigot lid printed spigot-down
+leaves a 3 mm unsupported ledge around the perimeter — and that ledge is the face
+that lands on the rim. It prints droopy and the lid rocks.
+
+The fix is orientation: **print the lid plate-top-down.** The spigot and the fill
+collar then both rise from the bed, there is not a single overhang on the part,
+and the seating face is bed-flat. That is the only reason the fill collar points
+*down* in use.
+
+## D6 — Levels are referenced to the module's top face.
+
+The module sits 1.5 mm down in its locating recess, so levels measured from the
+chamber floor overshoot by that much — the fill line worked out at 76.5 mm above
+the module against a 75 mm ceiling. `module_top` now carries the recess, and the
+lines sit inside the band with margin: **fill at 73 mm** (2 mm below the ceiling)
+and **refill at 25 mm** (5 mm above the floor, as a dry-run guard).
+
+## D7 — Nothing gets printed until `verify.py` passes.
+
+Renders hide defects; a 288 g PETG part is expensive to get wrong. `cad/verify.py`
+asserts levels against the datasheet band, port placement, fits and clearances,
+mesh manifoldness, and does a **boolean interference test** of the lid seated on
+the chamber.
+
+Two things make it trustworthy rather than decorative:
+
+- **A positive control.** The same test runs with the lid dropped 1 mm, which
+  *must* collide. Without it, an interference check that silently measures
+  nothing passes forever.
+- **No stale reads.** OpenSCAD writes no file when a result is empty, so the
+  harness deleted the target before each render — otherwise the previous run's
+  mesh is read back as if it were this one's. That bug made the check report a
+  clean part as colliding and a colliding part as clean.
+
+The control is what caught D5: a 17 mm³ collision, where the rim area predicted
+~1100 mm³, is what revealed the seat was only 0.05 mm wide.
+
+## D8 — Open questions
 
 - **Water level datum.** The spec says "effective water level 20–75 mm" without
   stating the datum. Read here as *above the module's top face* (consistent with
