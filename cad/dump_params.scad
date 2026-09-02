@@ -8,6 +8,6 @@ ps = [["mm_module_od",mm_module_od],["mm_module_h",mm_module_h],
  ["sp_bore",sp_bore],["sp_od",sp_od],["sp_offset",sp_offset],
  ["lid_t",lid_t],["lid_spigot_h",lid_spigot_h],["lid_fit",lid_fit],
  ["lid_rim_seat",lid_rim_seat],["lid_pos_z",lid_pos_z],
- ["vent_d",vent_d],["vent_n",vent_n],["cable_notch_w",cable_notch_w],
+ ["vent_d",vent_d],["vent_n",vent_n],["vl_vent_d",vl_vent_d],["vl_vent_n",vl_vent_n],["plain_ml",plain_ml],["lip_h",lip_h],["cable_notch_w",cable_notch_w],
  ["bottle_ml",bottle_ml],["vessel_od",vessel_od],["vessel_cut_h",vessel_cut_h],["skirt_slop",skirt_slop]];
 for (p = ps) echo(str("PARAM ", p[0], "=", p[1]));

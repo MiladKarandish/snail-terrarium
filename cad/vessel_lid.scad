@@ -52,10 +52,10 @@ module vessel_lid() {
         translate([fog_off, 0, -eps])
             cylinder(d = fog_port_d, h = plate_t + fog_collar + 2*eps);
         // vents — without these the siphon stalls
-        for (i = [0 : vent_n - 1])
-            rotate([0, 0, i*360/vent_n])
+        for (a = [60, 120, 240, 300])
+            rotate([0, 0, a])
                 translate([vent_r, 0, -eps])
-                    cylinder(d = vent_d, h = plate_t + 2*eps);
+                    cylinder(d = vl_vent_d, h = plate_t + 2*eps);
         // cable notch through the skirt
         translate([-cable_notch_w/2, -plate_od/2 - eps, -skirt_h - eps])
             cube([cable_notch_w, plate_od/2 - vessel_od/2 + skirt_wall + 4,

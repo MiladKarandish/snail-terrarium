@@ -4,7 +4,7 @@ import re, math, subprocess, sys, pathlib, trimesh
 
 CAD = pathlib.Path(__file__).parent
 STL = CAD / "stl"; STL.mkdir(exist_ok=True)
-PARTS = ("vessel_lid", "gasket", "chamber", "lid")
+PARTS = ("simple_lid", "vessel_lid", "gasket", "chamber", "lid")
 
 def scad(src, out, extra=()):
     # OpenSCAD writes nothing for an empty result, so a stale file from a
@@ -76,6 +76,16 @@ for part in PARTS:
         f"{e[0]:.0f} x {e[1]:.0f} x {e[2]:.0f} mm, {m.volume/1000:5.1f} cm3 "
         f"(~{m.volume/1000*1.27:.0f} g)")
 
+# ── vent area must match the fog port (they are in series) ───────
+port_a = math.pi/4 * P["fog_port_d"]**2
+for nm, n, d in (("simple_lid", P["vent_n"], P["vent_d"]),
+                 ("vessel_lid", P["vl_vent_n"], P["vl_vent_d"])):
+    a = n * math.pi/4 * d**2
+    chk(f"{nm}: vents match the port", a >= port_a,
+        f"{a:.0f} mm2 vents vs {port_a:.0f} mm2 port ({a/port_a*100:.0f}%)")
+chk("no-reservoir endurance", P["plain_ml"]/20 >= 14,
+    f"{P['plain_ml']:.0f} ml -> {P['plain_ml']/20:.0f} days at 20 ml/day")
+
 # ── cut-bottle vessel lid ────────────────────────────────────────
 sp_len = P["vessel_cut_h"] - P["water_level"]
 chk("standpipe reaches the level", sp_len > 20,
@@ -84,14 +94,16 @@ chk("skirt tolerates bottle variation", P["skirt_slop"] >= 4,
     f"self-centres over {P['vessel_od']:.0f}-{P['vessel_od']+P['skirt_slop']:.0f} mm")
 fog_off = -(P["vessel_od"]/2 - P["fog_port_d"]/2 - 6)
 vr = P["vessel_od"]/2 - 7
-worst_sp = min(math.hypot(vr*math.cos(math.radians(i*360/P["vent_n"])) - P["sp_offset"],
-                          vr*math.sin(math.radians(i*360/P["vent_n"])))
-               for i in range(int(P["vent_n"]))) - P["sp_od"]/2 - P["vent_d"]/2
-worst_fg = min(math.hypot(vr*math.cos(math.radians(i*360/P["vent_n"])) - fog_off,
-                          vr*math.sin(math.radians(i*360/P["vent_n"])))
-               for i in range(int(P["vent_n"]))) - P["fog_port_d"]/2 - P["fog_boss_wall"] - P["vent_d"]/2
-chk("vents clear standpipe and fog port", min(worst_sp, worst_fg) >= 1.0,
-    f"{min(worst_sp, worst_fg):.1f} mm closest approach")
+P["vent_n_vl"] = P["vl_vent_n"]
+VL_VENT_A = [60, 120, 240, 300]          # must match vessel_lid.scad
+import math as _m
+def _vc(cx, cy, r):
+    return min(_m.hypot(vr*_m.cos(_m.radians(a)) - cx, vr*_m.sin(_m.radians(a)) - cy)
+               for a in VL_VENT_A) - r - P["vl_vent_d"]/2
+worst = min(_vc(P["sp_offset"], 0, P["sp_od"]/2),
+            _vc(fog_off, 0, P["fog_port_d"]/2 + P["fog_boss_wall"]))
+chk("vents clear standpipe and fog port", worst >= 1.0,
+    f"{worst:.1f} mm closest approach")
 chk("fog port sits over the vessel mouth",
     abs(fog_off) + P["fog_port_d"]/2 + P["fog_boss_wall"] <= P["vessel_od"]/2,
     f"outer edge {abs(fog_off) + P['fog_port_d']/2 + P['fog_boss_wall']:.1f} mm "
@@ -116,5 +128,8 @@ bad = sum(not ok for ok, _, _ in res)
 for ok, name, detail in res:
     print(f"{'PASS' if ok else 'FAIL'}  {name:<34} {detail}")
 print(f"\n{len(res)-bad}/{len(res)} checks passed")
-print(f"TOTAL PRINTED: {total/1000:.0f} cm3  ~{total/1000*1.27:.0f} g PETG")
+rec = trimesh.load(STL / "simple_lid.stl").volume
+print(f"RECOMMENDED BUILD (cut bottle + simple_lid): "
+      f"{rec/1000:.1f} cm3  ~{rec/1000*1.27:.0f} g PETG")
+print(f"  all variants combined, for reference: {total/1000:.0f} cm3")
 sys.exit(1 if bad else 0)

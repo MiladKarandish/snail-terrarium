@@ -75,8 +75,12 @@ lid_spigot_h      = 5.0;
 lid_fit           = 0.30;
 lid_finger_d      = 20;
 lid_rim_seat      = (ch_flange_od - ch_id)/2;
-vent_d            = 5;
+// Air in and fog out are in SERIES, so vent area must be >= port area
+// or the vents throttle the outlet. Sized to ~1.15x the port.
+vent_d            = 12;
 vent_n            = 5;
+vl_vent_d         = 13;    // vessel_lid: fewer, larger, dodging the standpipe
+vl_vent_n         = 4;
 cable_notch_w     = mm_cable_od + 3;
 cable_notch_h     = 6;
 lid_pos_z         = ch_floor + ch_inner_h;
@@ -95,6 +99,10 @@ skirt_h           = 14;
 skirt_wall        = 2.0;
 skirt_slop        = 5;     // cone self-centres over od-0 .. od+slop
 plate_t           = 3.0;
+lip_h             = 6.0;   // short locating lip; a 14 mm skirt is wasted height
+fog_collar_h      = 6.0;
+// Endurance with NO reservoir: the level simply drifts down the band.
+plain_ml          = 3.14159/4 * pow(vessel_od - 2, 2) * (water_max - water_min)/1000;
 
 // ── Reservoir bottle ─────────────────────────────────────────
 bottle_ml         = 500;   // ~25 days at 20 ml/day
@@ -120,4 +128,5 @@ module teardrop(d, len) {          // support-free horizontal hole, tip UP
 echo(str("chamber OD ", ch_od, " x ", ch_floor+ch_inner_h, " mm tall"));
 echo(str("water held at ", water_level, " mm = ", water_hold,
          " mm above the module top (band ", water_min, "-", water_max, ")"));
+echo(str("no-reservoir endurance: ", plain_ml, " ml -> ", plain_ml/20, " days"));
 echo(str("bottle ", bottle_ml, " ml -> ", bottle_ml/20, " days at 20 ml/day"));

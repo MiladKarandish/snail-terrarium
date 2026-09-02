@@ -185,7 +185,50 @@ Not adopted yet only because it needs a specific container to design the lid
 around. If a suitable jar is available, that is the cheapest version of this
 build by a wide margin.
 
-## D11 — Open questions
+## D11 — The reservoir outlived its justification.
+
+Re-derived from scratch after the vessel became free. **The Mariotte reservoir
+was correct only while the vessel was printed.**
+
+Its purpose was holding the level constant so an *expensive* vessel could be
+small: capacity cost `footprint x band` in PETG. Once the vessel became a cut
+bottle, capacity became free — and the reason for the reservoir vanished. It was
+carried forward on momentum, not on a reason that still held.
+
+With a 55 mm band and a Ø88 bottle, the level can simply drift down the band:
+
+```
+  π/4 × 88² × 55 mm = 334 mL ÷ 20 mL/day  ≈ 17 days   (1.5 L bottle)
+  π/4 × 103² × 55   = 458 mL              ≈ 23 days   (2 L bottle)
+```
+
+The reservoir bought endurance obtainable for free by cutting a bigger empty
+bottle. What it cost: a standpipe, a TPU neck seal, a second bottle to mount and
+keep upright, a siphon that can stall if the vents block — and **50 mm of part
+height**, which is the cost driver.
+
+```
+                          printed   PETG   height   layers @100 um
+  bottle + Mariotte lid   37.7 cm3   48 g   66 mm      660
+  bottle + simple lid     26.1 cm3   33 g   15 mm      150
+```
+
+`vessel_lid` is kept for anyone who wants a genuinely constant level — steadier
+fog output across the cycle — but it is not the default.
+
+**The lesson worth keeping:** when a constraint disappears, re-derive the
+decisions that were made to satisfy it. Three of them here were downstream of
+"the vessel is expensive", and all three fell together.
+
+## D12 — Vents and the fog port are in series.
+
+Air in and fog out are the same flow path. The **smaller** opening sets
+throughput, so vent area must be at least the port area. The original 5 x Ø5 mm
+vents were 98 mm² against a 491 mm² port — **throttling the outlet to 20 %**.
+Vents are now sized to ~1.15x the port, and `verify.py` checks the ratio on both
+lids. Enlarging them also removes material.
+
+## D13 — Open questions
 
 - **Water level datum.** The spec says "effective water level 20–75 mm" without
   stating the datum. Read here as *above the module's top face* (consistent with
