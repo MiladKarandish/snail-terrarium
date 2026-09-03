@@ -32,7 +32,10 @@ water_start       = 41;    // probe closes here
 water_best_lo     = 42;
 water_best_hi     = 45;
 water_struggle    = 50;
-water_hold        = 44;    // what the bottle feed holds it at
+water_hold        = 47;    // holds the cap SUBMERGED (module top 45) while
+                           // staying below the 50 mm point where it labours.
+                           // That is a 4 mm window - only a regulated feed
+                           // can sit in it.
 water_band        = water_struggle - water_start;   // only 10 mm
 
 // ── Water column ─────────────────────────────────────────────
@@ -42,7 +45,7 @@ water_band        = water_struggle - water_start;   // only 10 mm
 // of a 55 mm band that the real part does not have.
 mm_recess_d       = 1.5;
 water_level       = water_hold;
-fog_headspace     = 35;
+fog_headspace     = 45;   // also lifts the rim flange clear of the fan pad
 
 // ── Chamber (cylindrical: least wall for a given volume) ──────
 // The module is Ø45 AND 45 mm tall, and the water sits at 44 mm - so a
@@ -55,7 +58,7 @@ ch_wall           = 1.6;   // EXACTLY 4 perimeters at a 0.4 mm nozzle, so the
                            // A thicker wall is WORSE: at 2 perimeters a 2.0 mm
                            // wall is 0.8 mm shell + 1.2 mm of 20% infill, which
                            // weeps. Keep this a multiple of 0.4.
-ch_floor          = 3.0;
+ch_floor          = 2.4;
 ch_od             = ch_id + 2*ch_wall;
 // A 1.6 mm wall leaves too narrow a ledge for the lid, so thicken just
 // the top few mm. Costs ~3 cm3 and stiffens the rim of a thin tube.
@@ -151,3 +154,35 @@ module teardrop(d, len) {          // support-free horizontal hole, tip UP
 echo(str("chamber OD ", ch_od, " x ", ch_floor+ch_inner_h, " mm tall"));
 echo(str("water held at ", water_hold, " mm from the floor (band ", water_start, "-", water_struggle, ")"));
 echo(str("bottle ", bottle_ml, " ml -> ", bottle_ml/20, " days at 20 ml/day"));
+
+// ── External feed (Mariotte) ─────────────────────────────────
+// A conduit up the OUTSIDE of the wall, entering through a port at
+// the water line. The port height sets the level: water leaves the
+// bottle until it seals the port, then no air can enter and it stops.
+// The bottle can therefore sit at any convenient height above.
+feed_id           = 20;
+feed_wall         = 4.0;
+feed_od           = feed_id + 2*feed_wall;
+// Must satisfy BOTH:
+//   feed_centre - feed_id/2 > ch_od/2  so the conduit bore does not open
+//                                      into the chamber except at the port
+//   feed_centre - feed_od/2 < ch_od/2  so the two outer walls fuse
+feed_centre       = 43.6;
+feed_port_d       = 14;
+feed_top          = 86;    // where the bottle socket sits
+
+// ── Fan mount — deliberately generic ─────────────────────────
+// Fan sizes vary by what is actually in stock, so the body carries one
+// pad drilled for a 40 mm fan (32 mm pitch). Smaller fans mount via a
+// small adapter plate rather than a reprint of the whole body.
+fan_pad           = 46;
+fan_bore          = 30;
+fan_pitch         = 32;
+fan_screw_d       = 3.2;
+fan_z             = 64;
+
+// ── Nozzle ───────────────────────────────────────────────────
+nozzle_d          = 25;
+nozzle_wall       = 2.0;
+nozzle_len        = 14;
+nozzle_z          = 64;
