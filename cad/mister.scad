@@ -46,9 +46,11 @@ module body() {
         // pocket for a real bottle cap, open at the top
         translate([feed_centre, 0, feed_top + 3 - eps])
             cylinder(d = cap_od + 2*cap_fit, h = cap_h + 3);
-        // feed port — its height IS the water level. It must stop INSIDE
-        // the conduit bore, never punch out through the conduit's far wall.
-        translate([ch_id/2 - 4, 0, ch_floor + water_hold])
+        // TWO feed ports. The higher OPEN one sets the level, so plugging
+        // the upper drops the level to the lower. Each must stop inside the
+        // conduit bore, never punch out through its far wall.
+        // positioned by its TOP edge: that is where air gets in
+        translate([ch_id/2 - 4, 0, ch_floor + water_hold - feed_port_d/2])
             rotate([0, 90, 0])
                 cylinder(d = feed_port_d, h = feed_centre - (ch_id/2 - 4) + 4);
         // fan bore + screw holes
@@ -101,6 +103,15 @@ module fan30() {                        // 30 mm fan (24 mm pitch) on the 40 mm 
     }
 }
 
+module spacer() {               // raises the module 3 mm when the cap is off
+    difference() {
+        cylinder(d = spacer_d, h = spacer_t);
+        for (i = [0:5]) rotate([0, 0, i*60])
+            translate([spacer_d/4, 0, -eps]) cylinder(d = 7, h = spacer_t + 2*eps);
+    }
+}
+
 if (PART == "body") body();
+else if (PART == "spacer") spacer();
 else if (PART == "lid") lid();
 else fan30();

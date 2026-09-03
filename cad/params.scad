@@ -32,10 +32,23 @@ water_start       = 41;    // probe closes here
 water_best_lo     = 42;
 water_best_hi     = 45;
 water_struggle    = 50;
-water_hold        = 47;    // holds the cap SUBMERGED (module top 45) while
-                           // staying below the 50 mm point where it labours.
-                           // That is a 4 mm window - only a regulated feed
-                           // can sit in it.
+// ONE feed port, positioned by its TOP EDGE. The siphon stabilises where
+// air can just get in, which is the top of the opening - not its centre.
+// A Ø14 port centred at the level would hold the water 7 mm too high.
+//
+// The level is then fixed, and the module is what moves: a printed spacer
+// under it raises the disc and probe, which is the same thing as lowering
+// the water. 3 mm of level separation is far smaller than any usable port
+// bore, so two ports would simply merge into one slot.
+//   44 mm  cap OFF   - exactly the range measured (best 42-45), 3 mm over
+//                      the probe and 6 mm under the splashing point
+//   47 mm  cap ON    - submerges the 45 mm module, 3 mm under splashing
+// The cap is removable, and the water test was run without it, so the
+// 47 mm figure is inferred rather than measured. This way that question
+// does not have to be settled before committing 78 g of PETG.
+water_hold        = 47;    // port TOP edge; cap ON, module sitting flat
+spacer_t          = 3.0;   // cap OFF: spacer raises the module -> 44 effective
+spacer_d          = 44;
 water_band        = water_struggle - water_start;   // only 10 mm
 
 // ── Water column ─────────────────────────────────────────────

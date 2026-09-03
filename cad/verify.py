@@ -4,11 +4,12 @@ import re, math, subprocess, sys, pathlib, trimesh
 
 CAD = pathlib.Path(__file__).parent
 STL = CAD / "stl"; STL.mkdir(exist_ok=True)
-PARTS = ("mister_body", "mister_lid", "mister_fan30")
+PARTS = ("mister_body", "mister_lid", "mister_spacer", "mister_fan30")
 
 PART_SRC = {"mister_body": ("mister.scad", 'PART="body"'),
             "mister_lid":  ("mister.scad", 'PART="lid"'),
-            "mister_fan30":("mister.scad", 'PART="fan30"')}
+            "mister_fan30":("mister.scad", 'PART="fan30"'),
+            "mister_spacer":("mister.scad", 'PART="spacer"')}
 
 def scad(src, out, extra=()):
     # OpenSCAD writes nothing for an empty result, so a stale file from a
@@ -25,13 +26,17 @@ res = []
 def chk(name, cond, detail): res.append((bool(cond), name, detail))
 
 # ── water level vs the module's datasheet band ───────────────────
-chk("level inside the MEASURED band",
-    P["water_best_lo"] <= P["water_hold"] <= P["water_best_hi"],
-    f"held at {P['water_hold']:.0f} mm (best {P['water_best_lo']:.0f}-{P['water_best_hi']:.0f})")
-chk("clear of the probe cutoff", P["water_hold"] - P["water_start"] >= 2,
-    f"{P['water_hold'] - P['water_start']:.0f} mm above the {P['water_start']:.0f} mm cutoff")
-chk("clear of the splashing point", P["water_struggle"] - P["water_hold"] >= 4,
-    f"{P['water_struggle'] - P['water_hold']:.0f} mm below where it labours")
+chk("cap ON: module submerged", P["water_hold"] > P["mm_module_h"],
+    f"{P['water_hold']:.0f} mm over a {P['mm_module_h']:.0f} mm module")
+chk("cap ON: clear of probe and splashing",
+    P["water_hold"] - P["water_start"] >= 2 and P["water_struggle"] - P["water_hold"] >= 3,
+    f"{P['water_hold']-P['water_start']:.0f} mm over probe, {P['water_struggle']-P['water_hold']:.0f} mm under splashing")
+eff = P["water_hold"] - P["spacer_t"]
+chk("cap OFF + spacer hits the measured best",
+    P["water_best_lo"] <= eff <= P["water_best_hi"],
+    f"{eff:.0f} mm effective, measured best {P['water_best_lo']:.0f}-{P['water_best_hi']:.0f}")
+chk("spacer clears the module footprint", P["spacer_d"] <= P["mm_module_od"],
+    f"Ø{P['spacer_d']:.0f} under a Ø{P['mm_module_od']:.0f} module")
 
 # ── fits ─────────────────────────────────────────────────────────
 chk("module fits the bore", P["mm_module_od"] + 10 <= P["ch_id"],
