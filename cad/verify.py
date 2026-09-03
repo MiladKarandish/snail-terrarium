@@ -4,7 +4,7 @@ import re, math, subprocess, sys, pathlib, trimesh
 
 CAD = pathlib.Path(__file__).parent
 STL = CAD / "stl"; STL.mkdir(exist_ok=True)
-PARTS = ("mister_body", "mister_lid", "mister_fan30", "gasket")
+PARTS = ("mister_body", "mister_lid", "mister_fan30")
 
 PART_SRC = {"mister_body": ("mister.scad", 'PART="body"'),
             "mister_lid":  ("mister.scad", 'PART="lid"'),
@@ -62,6 +62,10 @@ chk("feed port stops inside the conduit",
     port_end < P["feed_centre"] + P["feed_id"]/2,
     f"port ends at x={port_end:.1f}, conduit bore runs to "
     f"{P['feed_centre'] + P['feed_id']/2:.1f}")
+chk("cap pocket clears the conduit bore", P["cap_od"] > P["feed_id"] + 8,
+    f"Ø{P['cap_od']:.0f} cap over a Ø{P['feed_id']:.0f} bore")
+chk("boss wall around the cap", (P["socket_od"] - P["cap_od"] - 2*P["cap_fit"])/2 >= 1.2,
+    f"{(P['socket_od'] - P['cap_od'] - 2*P['cap_fit'])/2:.2f} mm of wall around the pocket")
 chk("conduit carries the flow", P["feed_id"] >= 8,
     f"Ø{P['feed_id']:.0f} bore for ~20 ml/day")
 chk("cable clears its notch", P["cable_notch_w"] - P["mm_cable_od"] >= 2,

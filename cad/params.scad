@@ -78,7 +78,16 @@ fog_boss_wall     = 2.0;
 // until it seals this opening; air can then no longer enter, so
 // flow stops. The level is independent of how full the bottle is.
 // The bore is uniform so the lid prints without a single overhang.
-sp_bore           = 28.6;  // PCO-1881 neck (27.4 mm) + clearance
+// The bottle SCREWS in, using its own cap. A standard PET cap is
+// captured in a pocket in the printed boss and drilled through: the
+// thread is then a real injection-moulded one, and the seal is the
+// cap's own liner against the bottle rim - exactly what it is for.
+// Printing a PCO-1881 thread instead is a 3-start profile and a
+// coin toss on FDM tolerances for something that must not leak.
+cap_od            = 31.0;  // MEASURE your bottle cap across the knurl
+cap_h             = 14.0;  // MEASURE cap height
+cap_fit           = 0.35;  // press fit; a smear of glue makes it permanent
+sp_bore           = 28.6;  // legacy, retained for the superseded parts
 sp_wall           = 1.6;  // 4 perimeters, same reason
 sp_od             = sp_bore + 2*sp_wall;
 sp_offset         = 16;    // off-centre, clear of the disc's plume
@@ -188,4 +197,4 @@ nozzle_len        = 14;
 nozzle_z          = 64;
 
 fan_pad_t         = 3.0;
-socket_od         = sp_bore + 2*sp_wall;
+socket_od         = cap_od + 2*cap_fit + 5;   // 2.5 mm wall around the pocket

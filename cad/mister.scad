@@ -32,7 +32,7 @@ module body() {
             translate([feed_centre, 0, feed_top - 24 - eps])
                 cylinder(d1 = feed_od, d2 = socket_od, h = 16 + eps);
             translate([feed_centre, 0, feed_top - 8 - eps])
-                cylinder(d = socket_od, h = 8 + sp_socket_depth);
+                cylinder(d = socket_od, h = 8 + cap_h + 3);
             // fan pad, flat so a fan can actually seat on it
             translate([-ch_od/2 - fan_pad_t + 1.5, -fan_pad/2, fan_z - fan_pad/2])
                 cube([fan_pad_t, fan_pad, fan_pad]);
@@ -43,8 +43,9 @@ module body() {
         translate([0, 0, ch_floor]) cylinder(d = ch_id, h = ch_inner_h + eps);   // bore
         translate([0, 0, -eps]) cylinder(d = mm_module_od + 1.5, h = mm_recess_d + eps);
         feed_column(feed_id, feed_top - ch_floor, ch_floor);        // conduit bore
-        translate([feed_centre, 0, feed_top - eps])                 // bottle neck socket
-            cylinder(d = sp_bore, h = sp_socket_depth + 2*eps);
+        // pocket for a real bottle cap, open at the top
+        translate([feed_centre, 0, feed_top + 3 - eps])
+            cylinder(d = cap_od + 2*cap_fit, h = cap_h + 3);
         // feed port — its height IS the water level. It must stop INSIDE
         // the conduit bore, never punch out through the conduit's far wall.
         translate([ch_id/2 - 4, 0, ch_floor + water_hold])
@@ -86,6 +87,8 @@ module lid() {
     }
 }
 
+// The captured cap replaces the TPU washer entirely - the cap's own
+// liner does the sealing, so gasket.stl is no longer part of the build.
 module fan30() {                        // 30 mm fan (24 mm pitch) on the 40 mm pad
     difference() {
         cube([fan_pad, fan_pad, 3], center = true);
