@@ -26,21 +26,25 @@ module body() {
         union() {
             cylinder(d = ch_od, h = ch_h);
             translate([0, 0, ch_h - ch_flange_h]) cylinder(d = ch_flange_od, h = ch_flange_h);
-            feed_column(feed_od, feed_top, 0);                    // external conduit
-            translate([feed_centre, 0, feed_top - eps])           // bottle socket boss
-                cylinder(d = sp_bore + 2*sp_wall, h = sp_socket_depth);
+            // conduit: a slim tube that flares conically into the bottle
+            // socket, so the wider boss is self-supporting when printed
+            feed_column(feed_od, feed_top - 24, 0);
+            translate([feed_centre, 0, feed_top - 24 - eps])
+                cylinder(d1 = feed_od, d2 = socket_od, h = 16 + eps);
+            translate([feed_centre, 0, feed_top - 8 - eps])
+                cylinder(d = socket_od, h = 8 + sp_socket_depth);
             // fan pad, flat so a fan can actually seat on it
-            translate([-ch_od/2 - 1.5, -fan_pad/2, fan_z - fan_pad/2])
-                cube([4, fan_pad, fan_pad]);
+            translate([-ch_od/2 - fan_pad_t + 1.5, -fan_pad/2, fan_z - fan_pad/2])
+                cube([fan_pad_t, fan_pad, fan_pad]);
             // nozzle spigot
             translate([0, ch_od/2 - eps, nozzle_z])
                 teardrop(nozzle_d + 2*nozzle_wall, nozzle_len);
         }
         translate([0, 0, ch_floor]) cylinder(d = ch_id, h = ch_inner_h + eps);   // bore
         translate([0, 0, -eps]) cylinder(d = mm_module_od + 1.5, h = mm_recess_d + eps);
-        feed_column(feed_id, feed_top + sp_socket_depth, ch_floor);              // conduit bore
-        translate([feed_centre, 0, feed_top + sp_socket_depth - sp_socket_depth])
-            cylinder(d = sp_bore, h = sp_socket_depth + eps);                    // neck socket
+        feed_column(feed_id, feed_top - ch_floor, ch_floor);        // conduit bore
+        translate([feed_centre, 0, feed_top - eps])                 // bottle neck socket
+            cylinder(d = sp_bore, h = sp_socket_depth + 2*eps);
         // feed port — its height IS the water level. It must stop INSIDE
         // the conduit bore, never punch out through the conduit's far wall.
         translate([ch_id/2 - 4, 0, ch_floor + water_hold])

@@ -45,7 +45,7 @@ water_band        = water_struggle - water_start;   // only 10 mm
 // of a 55 mm band that the real part does not have.
 mm_recess_d       = 1.5;
 water_level       = water_hold;
-fog_headspace     = 45;   // also lifts the rim flange clear of the fan pad
+fog_headspace     = 42;   // also lifts the rim flange clear of the fan pad
 
 // ── Chamber (cylindrical: least wall for a given volume) ──────
 // The module is Ø45 AND 45 mm tall, and the water sits at 44 mm - so a
@@ -160,14 +160,14 @@ echo(str("bottle ", bottle_ml, " ml -> ", bottle_ml/20, " days at 20 ml/day"));
 // the water line. The port height sets the level: water leaves the
 // bottle until it seals the port, then no air can enter and it stops.
 // The bottle can therefore sit at any convenient height above.
-feed_id           = 20;
-feed_wall         = 4.0;
+feed_id           = 12;   // carries ~20 ml/DAY; 20 mm was absurd
+feed_wall         = 2.4;  // 6 perimeters
 feed_od           = feed_id + 2*feed_wall;
 // Must satisfy BOTH:
 //   feed_centre - feed_id/2 > ch_od/2  so the conduit bore does not open
 //                                      into the chamber except at the port
 //   feed_centre - feed_od/2 < ch_od/2  so the two outer walls fuse
-feed_centre       = 43.6;
+feed_centre       = 38.8;
 feed_port_d       = 14;
 feed_top          = 86;    // where the bottle socket sits
 
@@ -175,7 +175,7 @@ feed_top          = 86;    // where the bottle socket sits
 // Fan sizes vary by what is actually in stock, so the body carries one
 // pad drilled for a 40 mm fan (32 mm pitch). Smaller fans mount via a
 // small adapter plate rather than a reprint of the whole body.
-fan_pad           = 46;
+fan_pad           = 42;   // just clears the 32 mm screw pitch
 fan_bore          = 30;
 fan_pitch         = 32;
 fan_screw_d       = 3.2;
@@ -186,3 +186,6 @@ nozzle_d          = 25;
 nozzle_wall       = 2.0;
 nozzle_len        = 14;
 nozzle_z          = 64;
+
+fan_pad_t         = 3.0;
+socket_od         = sp_bore + 2*sp_wall;

@@ -57,11 +57,13 @@ chk("conduit bore stays out of the chamber",
     P["feed_centre"] - P["feed_id"]/2 > P["ch_od"]/2 + 1,
     f"{P['feed_centre'] - P['feed_id']/2 - P['ch_od']/2:.1f} mm of wall between them "
     "- if this goes negative the siphon just drains")
-port_end = P["feed_centre"] - (P["ch_id"]/2 - 4) + 4 + (P["ch_id"]/2 - 4)
+port_end = P["feed_centre"] + 4
 chk("feed port stops inside the conduit",
     port_end < P["feed_centre"] + P["feed_id"]/2,
     f"port ends at x={port_end:.1f}, conduit bore runs to "
     f"{P['feed_centre'] + P['feed_id']/2:.1f}")
+chk("conduit carries the flow", P["feed_id"] >= 8,
+    f"Ø{P['feed_id']:.0f} bore for ~20 ml/day")
 chk("cable clears its notch", P["cable_notch_w"] - P["mm_cable_od"] >= 2,
     f"notch {P['cable_notch_w']:.1f} mm for a {P['mm_cable_od']:.1f} mm cable")
 
