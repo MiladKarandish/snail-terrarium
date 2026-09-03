@@ -8,29 +8,48 @@
 // ─────────────────────────────────────────────────────────────
 
 // ── Mist maker module ────────────────────────────────────────
-// CONFIRMED (eshop.eca.ir, 550 ml/h unit):
-//   24 V DC · >=550 ml/h · effective water level 20-75 mm
-//   head dia 45 mm · module height 45 mm · 5-45 C
-//   cable 1400 +/-20 mm, 3.8 mm OD · DC female 5.5 x 2.1 mm
+// MEASURED on the actual unit, 2026-09-03, in a bowl of water.
+// The vendor spec misled on both numbers that mattered:
+//   Module height IS 45 mm (measured) - the spec was right.
+//   "water level 20-75 mm" is measured from the ceramic disc down in
+//   the well, NOT from the base, which is why it reads so oddly.
+//
+// All depths below are TOTAL DEPTH FROM THE VESSEL FLOOR, with the
+// module standing on that floor:
+//   41 mm   safety probe closes, unit starts
+//   42-50   works; no meaningful output difference across it
+//   >50     labours and throws droplets instead of fog
+// Note the module is 45 mm tall, so at the working level its top rim
+// stands slightly PROUD of the water - only the recessed disc is
+// covered. That is normal for this unit.
+//
+// The unit carries its own level probe, so it CANNOT run dry. That
+// removes the failure mode the earlier designs guarded against.
 mm_module_od      = 45;
-mm_module_h       = 45;
+mm_module_h       = 45;    // MEASURED total height
 mm_cable_od       = 3.8;
-water_min         = 20;
-water_max         = 75;
+water_start       = 41;    // probe closes here
+water_best_lo     = 42;
+water_best_hi     = 45;
+water_struggle    = 50;
+water_hold        = 44;    // what the bottle feed holds it at
+water_band        = water_struggle - water_start;   // only 10 mm
 
 // ── Water column ─────────────────────────────────────────────
-// A Mariotte (inverted-bottle) reservoir holds the level CONSTANT,
-// so it is parked near the BOTTOM of the band rather than filled to
-// the top. That is what makes this build cheap: the water column
-// drops from 118 mm to 68.5 mm, and the chamber shrinks with it.
+// A 10 mm usable band means an UNREGULATED vessel needs refilling
+// every ~3 days. That is why the bottle feed is required here, and
+// why dropping it earlier was wrong: it was dropped on the strength
+// of a 55 mm band that the real part does not have.
 mm_recess_d       = 1.5;
-module_top        = mm_module_h - mm_recess_d;
-water_hold        = 23;    // 3 mm above the 20 mm minimum
-water_level       = module_top + water_hold;
-fog_headspace     = 50;
+water_level       = water_hold;
+fog_headspace     = 35;
 
 // ── Chamber (cylindrical: least wall for a given volume) ──────
-ch_id             = 72;    // 45 mm module + standpipe clearance
+// The module is Ø45 AND 45 mm tall, and the water sits at 44 mm - so a
+// standpipe hanging INSIDE beside the module would need a Ø118 bore to
+// clear it. The feed therefore has to run OUTSIDE the chamber wall and
+// enter through a port at the water line. That keeps the bore at 60.
+ch_id             = 60;
 ch_wall           = 1.6;   // EXACTLY 4 perimeters at a 0.4 mm nozzle, so the
                            // wall is 100% shell with no infill inside it.
                            // A thicker wall is WORSE: at 2 perimeters a 2.0 mm
@@ -94,7 +113,12 @@ lid_pos_z         = ch_floor + ch_inner_h;
 // lid at the cut, so the joint is never wet. Only the bottle-neck
 // socket seals.
 vessel_od         = 90;    // MEASURE bottle OD at the cut (1.5 L ~ 88-92)
-vessel_cut_h      = 120;   // cut this high above the inside floor
+// A bottle has no locating recess, so the module's top face is simply
+// its own height above the floor.
+// A cut bottle still works IF the level is regulated (vessel_lid).
+// Without regulation it is not viable: a 10 mm band on a Ø88 bottle is
+// ~3 days. simple_lid has been retired for that reason.
+vessel_cut_h      = 80;    // water held at 43 + ~35 mm headspace
 skirt_h           = 14;
 skirt_wall        = 2.0;
 skirt_slop        = 5;     // cone self-centres over od-0 .. od+slop
@@ -102,7 +126,6 @@ plate_t           = 3.0;
 lip_h             = 6.0;   // short locating lip; a 14 mm skirt is wasted height
 fog_collar_h      = 6.0;
 // Endurance with NO reservoir: the level simply drifts down the band.
-plain_ml          = 3.14159/4 * pow(vessel_od - 2, 2) * (water_max - water_min)/1000;
 
 // ── Reservoir bottle ─────────────────────────────────────────
 bottle_ml         = 500;   // ~25 days at 20 ml/day
@@ -126,7 +149,5 @@ module teardrop(d, len) {          // support-free horizontal hole, tip UP
 
 // ── Capacity report ──────────────────────────────────────────
 echo(str("chamber OD ", ch_od, " x ", ch_floor+ch_inner_h, " mm tall"));
-echo(str("water held at ", water_level, " mm = ", water_hold,
-         " mm above the module top (band ", water_min, "-", water_max, ")"));
-echo(str("no-reservoir endurance: ", plain_ml, " ml -> ", plain_ml/20, " days"));
+echo(str("water held at ", water_hold, " mm from the floor (band ", water_start, "-", water_struggle, ")"));
 echo(str("bottle ", bottle_ml, " ml -> ", bottle_ml/20, " days at 20 ml/day"));

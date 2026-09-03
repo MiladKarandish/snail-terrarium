@@ -228,7 +228,41 @@ vents were 98 mm² against a 491 mm² port — **throttling the outlet to 20 %**
 Vents are now sized to ~1.15x the port, and `verify.py` checks the ratio on both
 lids. Enlarging them also removes material.
 
-## D13 — Open questions
+## D13 — The module was measured, and it invalidated everything.
+
+Handling the real part and running it in a bowl produced two numbers that no
+amount of reading had given:
+
+```
+  module height        45 mm     (spec was right; my photo estimate of 29 was not)
+  starts working       41 mm     water depth from the VESSEL FLOOR
+  works                42-50 mm
+  labours / splashes   >50 mm
+```
+
+The vendor's "effective water level 20-75 mm" is measured **from the ceramic disc
+down in the well**, not from the base — which is why it never matched anything.
+
+Three consequences, in order of importance:
+
+**1. The usable band is 9 mm, not 55.** An unregulated vessel drifts from 41 to
+50 mm and stops. On a Ø88 bottle that is ~3 days. **This reverses D11.** Dropping
+the reservoir was correct arithmetic on a 55 mm band and simply wrong on a 9 mm
+one. Level regulation is what makes this practical, not a refinement.
+
+**2. The feed has to run outside the chamber.** The module is Ø45 *and* 45 mm
+tall, and water sits at 44 mm. A standpipe hanging inside beside it needs a **Ø80
+bore** to clear — and wall area goes with the square, so that is the difference
+between a cheap part and an expensive one. Running the feed up the outside and
+into a port at the water line keeps the bore at Ø60.
+
+**3. It cannot run dry.** The unit has its own level probe and stops at 41 mm.
+Every dry-run guard in the earlier designs was solving a problem the hardware had
+already solved.
+
+Everything drawn before this is in `cad/superseded/`.
+
+## D14 — Open questions
 
 - **Water level datum.** The spec says "effective water level 20–75 mm" without
   stating the datum. Read here as *above the module's top face* (consistent with
