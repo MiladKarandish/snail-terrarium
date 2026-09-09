@@ -26,11 +26,11 @@ What the module needs: **[../MIST-MAKER.md](../MIST-MAKER.md)**.
 
 ## Parts
 
-| File | Part | Qty | Notes |
-|---|---|---|---|
-| `stl/mister_body.stl` | Chamber, feed column, bottle socket | 1 | ~86 cm³, ~109 g |
-| `stl/mister_lid.stl` | Lid with cable gland | 1 | ~16 cm³, ~20 g |
-| `stl/mister_spacer.stl` | Trim spacer | 0–1 | Only if the level lands high — see *Commissioning* |
+| File | Part | Qty | Size | PETG |
+|---|---|---|---|---|
+| `stl/mister_body.stl` | Chamber, feed column, bottle socket | 1 | 98 × 91 × 136 mm | 84 cm³, ~106 g |
+| `stl/mister_lid.stl` | Lid with cable gland | 1 | 67 × 68 × 9 mm | 16 cm³, ~20 g |
+| `stl/mister_spacer.stl` | Trim spacer — only if the level lands high, see *Commissioning* | 0–1 | 43 × 43 × 2 mm | 2 cm³, ~3 g |
 
 Total for the build: **~102 cm³, ~129 g of PETG.**
 
@@ -59,6 +59,27 @@ checks run twice, once with a defect injected that must fail — a test that
 cannot fail is not a test.
 
 Change a number in `params.scad`, run it again.
+
+## Seeing it assembled
+
+```bash
+../.venv/bin/python viewer.py
+```
+
+Builds and serves an interactive 3D assembly at `http://127.0.0.1:8017/` — orbit
+it, pull it apart with the explode slider, switch parts off, and drag the section
+slider for a live cutting plane through the bore, the water and the feed port.
+`--build` writes a single self-contained `viewer/index.html` you can open
+straight off the disk, with no server and no network.
+
+Full reference, controls and troubleshooting: **[VIEWER.md](VIEWER.md)**.
+
+`assembly.scad` also renders stills directly:
+
+```bash
+openscad -o out.png --viewall --autocenter --camera=0,0,0,68,0,205,0 \
+         -D "EXPLODE=1" assembly.scad          # EXPLODE / SECTION / BOTTLE
+```
 
 ## Print settings
 
@@ -142,6 +163,12 @@ bottle is the first place you will see it.
 | `params.scad` | Every dimension, with its source and its reason |
 | `mister.scad` | The parts |
 | `checks.scad` | Geometry that exists only to be measured. Not printed |
-| `verify.py` | The gate |
+| `verify.py` | The gate — run this before printing anything |
+| `qa.py` | Standalone watertight/volume check over `stl/`. Superseded by `verify.py`, which does this and much more |
 | `section2d.scad` | True vertical section, rendered from the real solids |
+| `assembly.scad` | The whole thing together, printed and bought parts. Not printable |
+| `export_parts.scad` | Splits the assembly into meshes for the viewer |
+| `viewer.py` + `viewer/` | Builds and serves the interactive 3D assembly — see [VIEWER.md](VIEWER.md) |
+| `tools/pack_viewer.py` | Packs those meshes into the viewer's geometry blob |
+| `stl/` | Rendered STLs, plus `views/` — assembled, exploded, detail and section |
 | `superseded/` | Earlier designs. Kept for reference — **do not print** |

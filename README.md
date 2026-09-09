@@ -165,15 +165,22 @@ snail-terrarium/
 ├── MIST-MAKER.md          ← datasheet for the atomiser module
 ├── DESIGN-DECISIONS.md    ← why the printed parts are shaped the way they are
 └── cad/                   ← the printed mist chamber
+    ├── README.md          ← parts, print settings, assembly, commissioning
+    ├── VIEWER.md          ← how to run the interactive 3D assembly
     ├── params.scad        ← every dimension, with its source
     ├── mister.scad        ← body, lid, trim spacer
     ├── checks.scad        ← geometry that exists only to be measured
     ├── verify.py          ← nothing is printed until this passes
+    ├── assembly.scad      ← everything together, printed and bought parts
+    ├── viewer.py          ← builds/serves an interactive 3D assembly
     └── superseded/        ← earlier designs, kept for reference. Do not print.
 ```
 
 Build the parts with `../.venv/bin/python cad/verify.py` — it renders the STLs
-into `cad/stl/` and refuses to leave a failing part behind.
+into `cad/stl/` and refuses to leave a failing part behind. To see how it all
+goes together, `../.venv/bin/python cad/viewer.py` builds and serves an
+interactive 3D assembly you can orbit, explode and section —
+[cad/VIEWER.md](cad/VIEWER.md).
 
 Firmware lives in its own repository:
 [`esp8266-climate-pro`](https://github.com/MiladKarandish/esp8266-climate-pro).

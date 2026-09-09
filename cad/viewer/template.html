@@ -1,0 +1,453 @@
+<title>Mist Chamber Assembly</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#e9edf0; --panel:#ffffff; --panel-2:#f4f7f9;
+  --ink:#0e161c; --muted:#5b6a75; --line:#c9d3da; --line-soft:#dde4e9;
+  --accent:#15718f; --accent-soft:#15718f26;
+  --ok:#4a7740; --ok-soft:#4a774033;
+  --limit:#a85c18; --limit-soft:#a85c1826;
+  --stage:#dfe5ea;
+  --shadow:0 1px 2px #0e161c14, 0 8px 24px #0e161c14;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0b1116; --panel:#141d24; --panel-2:#101920;
+    --ink:#dde6ec; --muted:#8b9aa5; --line:#2a3841; --line-soft:#1e2a32;
+    --accent:#4ab4d8; --accent-soft:#4ab4d82e;
+    --ok:#7fb471; --ok-soft:#7fb47133;
+    --limit:#d9903f; --limit-soft:#d9903f2e;
+    --stage:#0f171d;
+    --shadow:0 1px 2px #0007, 0 10px 30px #0006;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0b1116; --panel:#141d24; --panel-2:#101920;
+  --ink:#dde6ec; --muted:#8b9aa5; --line:#2a3841; --line-soft:#1e2a32;
+  --accent:#4ab4d8; --accent-soft:#4ab4d82e;
+  --ok:#7fb471; --ok-soft:#7fb47133;
+  --limit:#d9903f; --limit-soft:#d9903f2e;
+  --stage:#0f171d;
+  --shadow:0 1px 2px #0007, 0 10px 30px #0006;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  font-size:14px; line-height:1.5;
+  height:100dvh; display:flex; flex-direction:column; overflow:hidden;
+}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
+
+/* ── title block ─────────────────────────────────────────── */
+header{
+  display:flex; align-items:stretch; gap:0; flex-wrap:wrap;
+  border-bottom:1px solid var(--line); background:var(--panel);
+  flex:0 0 auto;
+}
+.tb-name{padding:9px 18px 9px 20px; border-right:1px solid var(--line-soft)}
+h1{
+  font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif;
+  font-weight:700; font-size:19px; margin:0; letter-spacing:.01em;
+}
+.tb-name p{margin:1px 0 0; font-size:11.5px; color:var(--muted)}
+.tb-field{
+  padding:9px 16px; border-right:1px solid var(--line-soft);
+  display:flex; flex-direction:column; justify-content:center; min-width:0;
+}
+.tb-field .k{
+  font-size:9.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--muted); font-weight:500;
+}
+.tb-field .v{font-size:13.5px; margin-top:1px; white-space:nowrap}
+.tb-field .v em{font-style:normal; color:var(--muted)}
+.tb-pass{margin-left:auto; border-right:0; align-items:flex-end}
+.tb-pass .v{color:var(--ok); font-weight:500}
+
+/* ── stage ───────────────────────────────────────────────── */
+main{position:relative; flex:1 1 auto; min-height:0; background:var(--stage)}
+canvas{display:block; width:100%; height:100%; touch-action:none; cursor:grab}
+canvas:active{cursor:grabbing}
+
+.overlay{
+  position:absolute; background:var(--panel); border:1px solid var(--line);
+  border-radius:3px; box-shadow:var(--shadow);
+}
+
+/* parts legend */
+.legend{top:14px; left:14px; width:186px; padding:4px 0 6px; max-height:calc(100% - 28px); overflow:auto}
+.legend h2{
+  font-family:"IBM Plex Sans Condensed",sans-serif; font-size:10px; font-weight:600;
+  letter-spacing:.11em; text-transform:uppercase; color:var(--muted);
+  margin:9px 12px 3px; padding-top:7px; border-top:1px solid var(--line-soft);
+}
+.legend h2:first-child{border-top:0; padding-top:0; margin-top:7px}
+.row{
+  display:flex; align-items:center; gap:8px; width:100%;
+  padding:3px 12px; border:0; background:none; color:inherit;
+  font:inherit; font-size:12.5px; text-align:left; cursor:pointer;
+}
+.row:hover{background:var(--panel-2)}
+.row:focus-visible{outline:2px solid var(--accent); outline-offset:-2px}
+.sw{width:11px; height:11px; border-radius:2px; flex:0 0 auto; border:1px solid #0003}
+.row .n{flex:1 1 auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.row .t{font-size:10.5px; color:var(--muted)}
+.row[aria-pressed="false"]{color:var(--muted)}
+.row[aria-pressed="false"] .sw{opacity:.22}
+
+/* controls */
+.controls{
+  bottom:14px; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:16px; padding:10px 16px; flex-wrap:wrap;
+  justify-content:center; max-width:calc(100% - 28px);
+}
+.ctl{display:flex; align-items:center; gap:9px}
+.ctl label{
+  font-size:9.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--muted); font-weight:500;
+}
+input[type=range]{width:132px; accent-color:var(--accent); cursor:pointer}
+input[type=range]:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+.val{font-size:12px; color:var(--muted); min-width:40px}
+button.act{
+  font:inherit; font-size:12px; padding:4px 11px; cursor:pointer;
+  background:var(--panel-2); color:var(--ink);
+  border:1px solid var(--line); border-radius:3px;
+}
+button.act:hover{border-color:var(--accent); color:var(--accent)}
+button.act:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+button.act[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#fff}
+.sep{width:1px; align-self:stretch; background:var(--line-soft)}
+
+/* level gauge */
+.gauge{top:14px; right:14px; width:210px; padding:11px 13px 12px}
+.gauge h2{
+  font-family:"IBM Plex Sans Condensed",sans-serif; font-size:10px; font-weight:600;
+  letter-spacing:.11em; text-transform:uppercase; color:var(--muted); margin:0 0 2px;
+}
+.gauge p{margin:0 0 9px; font-size:11px; color:var(--muted); line-height:1.42}
+.gauge svg{display:block; width:100%; height:auto}
+.gauge .foot{
+  margin:9px 0 0; padding-top:8px; border-top:1px solid var(--line-soft);
+  font-size:11px; color:var(--muted); line-height:1.45;
+}
+.gauge .foot b{color:var(--ink); font-weight:500}
+
+.hint{
+  bottom:14px; left:14px; font-size:11px; color:var(--muted);
+  padding:6px 10px; pointer-events:none;
+}
+
+@media (max-width:1080px){
+  .gauge{display:none}
+}
+@media (max-width:760px){
+  .legend{width:150px; top:10px; left:10px}
+  .hint{display:none}
+  .controls{bottom:10px; gap:10px; padding:8px 12px}
+  input[type=range]{width:96px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header>
+  <div class="tb-name">
+    <h1>Mist Chamber Assembly</h1>
+    <p>Bottle-fed ultrasonic mister &middot; snail terrarium</p>
+  </div>
+  <div class="tb-field"><span class="k">Chamber</span>
+    <span class="v mono">&#8709;63.2 <em>&times;</em> 98.9 mm</span></div>
+  <div class="tb-field"><span class="k">Printed</span>
+    <span class="v mono">129 g <em>PETG</em></span></div>
+  <div class="tb-field"><span class="k">Water held</span>
+    <span class="v mono">46.0 mm</span></div>
+  <div class="tb-field"><span class="k">Wetted</span>
+    <span class="v mono">58 mL <em>/ 6.3 min</em></span></div>
+  <div class="tb-field tb-pass"><span class="k">verify.py</span>
+    <span class="v mono">45 / 45 pass</span></div>
+</header>
+
+<main>
+  <canvas id="stage"></canvas>
+
+  <div class="overlay legend" id="legend"></div>
+
+  <div class="overlay gauge">
+    <h2>Water level</h2>
+    <p>The feed port&rsquo;s apex sets the level. Air must bubble in before
+       water can leave, so it settles just below.</p>
+    <svg viewBox="0 0 184 214" role="img" aria-label="Water level scale from 38 to 52 mm showing the module's optimal band, probe cut-off and choke threshold against the design target">
+      <!-- optimal band, 42-47 mm -->
+      <rect x="26" y="80.6" width="34" height="66.3" fill="var(--ok-soft)"/>
+      <!-- where the level actually settles, 43.6-46 mm -->
+      <rect x="26" y="93.9" width="34" height="31.8" fill="var(--accent-soft)"/>
+      <rect x="26" y="14.3" width="34" height="185.7" fill="none" stroke="var(--line)" stroke-width="1"/>
+
+      <line x1="26" y1="40.8" x2="60" y2="40.8" stroke="var(--limit)" stroke-width="1.5"/>
+      <text x="66" y="39.8" fill="var(--limit)" font-family="IBM Plex Mono,monospace" font-size="10.5">50.0</text>
+      <text x="66" y="50.8" fill="var(--muted)" font-family="IBM Plex Sans,sans-serif" font-size="9.5">chokes, spits drops</text>
+
+      <line x1="18" y1="93.9" x2="60" y2="93.9" stroke="var(--accent)" stroke-width="2"/>
+      <text x="66" y="92.9" fill="var(--accent)" font-family="IBM Plex Mono,monospace" font-size="10.5" font-weight="500">46.0</text>
+      <text x="66" y="103.9" fill="var(--muted)" font-family="IBM Plex Sans,sans-serif" font-size="9.5">port apex</text>
+
+      <line x1="26" y1="125.7" x2="60" y2="125.7" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 2"/>
+      <text x="66" y="124.7" fill="var(--muted)" font-family="IBM Plex Mono,monospace" font-size="10.5">43.6</text>
+      <text x="66" y="135.7" fill="var(--muted)" font-family="IBM Plex Sans,sans-serif" font-size="9.5">&minus;2.4 mm bubble head</text>
+
+      <line x1="26" y1="160.2" x2="60" y2="160.2" stroke="var(--limit)" stroke-width="1.5"/>
+      <text x="66" y="159.2" fill="var(--limit)" font-family="IBM Plex Mono,monospace" font-size="10.5">41.0</text>
+      <text x="66" y="170.2" fill="var(--muted)" font-family="IBM Plex Sans,sans-serif" font-size="9.5">probe cuts out</text>
+
+      <text x="12" y="18" fill="var(--muted)" font-family="IBM Plex Mono,monospace" font-size="9.5" text-anchor="middle">52</text>
+      <text x="12" y="203" fill="var(--muted)" font-family="IBM Plex Mono,monospace" font-size="9.5" text-anchor="middle">38</text>
+    </svg>
+    <p class="foot">Optimal band <b>42&ndash;47 mm</b> per the module datasheet.
+       The design targets the high side so the bubble head cannot push it onto
+       the probe.</p>
+  </div>
+
+  <div class="overlay hint">Drag to orbit &middot; scroll to zoom &middot; right-drag to pan</div>
+
+  <div class="overlay controls">
+    <div class="ctl">
+      <label for="ex">Explode</label>
+      <input type="range" id="ex" min="0" max="100" value="0">
+      <span class="val mono" id="exv">0%</span>
+    </div>
+    <div class="sep"></div>
+    <div class="ctl">
+      <label for="cl">Section</label>
+      <input type="range" id="cl" min="0" max="100" value="100">
+      <span class="val mono" id="clv">off</span>
+    </div>
+    <div class="sep"></div>
+    <button class="act" id="spin" aria-pressed="false">Spin</button>
+    <button class="act" id="reset">Reset view</button>
+  </div>
+</main>
+
+__THREE__
+<script id="geom" type="application/json">__PARTS_JSON__</script>
+<script>
+(function(){
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("geom").textContent);
+
+  /* ── decode packed geometry ─────────────────────────────── */
+  function b64(s){
+    var bin = atob(s), out = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  function buildGeometry(p){
+    var qb = b64(p.pos);
+    var q  = new Uint16Array(qb.buffer, qb.byteOffset, qb.byteLength / 2);
+    var pos = new Float32Array(q.length);
+    var o = DATA.origin, s = DATA.scale;
+    for (var i = 0; i < q.length; i += 3){
+      pos[i]   = o[0] + q[i]   * s;
+      pos[i+1] = o[1] + q[i+1] * s;
+      pos[i+2] = o[2] + q[i+2] * s;
+    }
+    var ib = b64(p.idx);
+    var idx = p.wide ? new Uint32Array(ib.buffer, ib.byteOffset, ib.byteLength / 4)
+                     : new Uint16Array(ib.buffer, ib.byteOffset, ib.byteLength / 2);
+    var g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    g.setIndex(new THREE.BufferAttribute(idx, 1));
+    // flat shading: these are machined faces, not organic surfaces
+    g = g.toNonIndexed();
+    g.computeVertexNormals();
+    return g;
+  }
+
+  /* ── scene ──────────────────────────────────────────────── */
+  var canvas = document.getElementById("stage");
+  var renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.localClippingEnabled = true;
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(32, 1, 1, 5000);
+
+  var lo = DATA.bbox[0], hi = DATA.bbox[1];
+  var mid = [(lo[0]+hi[0])/2, (lo[1]+hi[1])/2, (lo[2]+hi[2])/2];
+  var span = Math.max(hi[0]-lo[0], hi[1]-lo[1], hi[2]-lo[2]);
+
+  // OpenSCAD is Z-up; three.js is Y-up. Rotate the whole model once, and
+  // every part position below stays in the CAD's own coordinates.
+  var root = new THREE.Group();
+  root.rotation.x = -Math.PI/2;
+  scene.add(root);
+
+  var key = new THREE.DirectionalLight(0xffffff, .82);  key.position.set(0.6, 1, 0.75);
+  var fill = new THREE.DirectionalLight(0xffffff, .30); fill.position.set(-0.8, 0.35, -0.55);
+  var rim = new THREE.DirectionalLight(0xffffff, .22);  rim.position.set(0.1, -0.7, -0.9);
+  scene.add(key, fill, rim,
+            new THREE.HemisphereLight(0xdfe9f0, 0x4a5158, .55));
+
+  var clipPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 1e6);
+
+  var parts = [];
+  DATA.parts.forEach(function(p){
+    var mat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(p.color),
+      roughness: p.name === "screws" ? 0.35 : 0.62,
+      metalness: p.name === "screws" ? 0.72 : 0.05,
+      transparent: p.opacity < 1, opacity: p.opacity,
+      side: THREE.DoubleSide,          // so a section shows interior walls
+      clippingPlanes: [clipPlane], clipShadows: true
+    });
+    var mesh = new THREE.Mesh(buildGeometry(p), mat);
+    mesh.renderOrder = p.opacity < 1 ? 2 : 1;
+    root.add(mesh);
+    parts.push({def:p, mesh:mesh, on:true});
+  });
+
+  /* ── camera control (drag orbit, wheel dolly, right-drag pan) ── */
+  var target = new THREE.Vector3(mid[0], mid[2], -mid[1]);  // CAD → three
+  var sph = {theta: -0.62, phi: 1.16, r: span * 1.85};
+  var pan = new THREE.Vector3();
+  function place(){
+    var r = sph.r, sp = Math.sin(sph.phi), cp = Math.cos(sph.phi);
+    camera.position.set(
+      target.x + pan.x + r * sp * Math.sin(sph.theta),
+      target.y + pan.y + r * cp,
+      target.z + pan.z + r * sp * Math.cos(sph.theta));
+    camera.lookAt(target.x + pan.x, target.y + pan.y, target.z + pan.z);
+  }
+  var drag = null;
+  canvas.addEventListener("pointerdown", function(e){
+    canvas.setPointerCapture(e.pointerId);
+    drag = {x:e.clientX, y:e.clientY, pan:(e.button === 2 || e.shiftKey)};
+  });
+  canvas.addEventListener("pointermove", function(e){
+    if (!drag) return;
+    var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    drag.x = e.clientX; drag.y = e.clientY;
+    if (drag.pan){
+      var k = sph.r * 0.0016;
+      var right = new THREE.Vector3().crossVectors(
+        camera.getWorldDirection(new THREE.Vector3()),
+        camera.up).normalize();
+      var up = new THREE.Vector3().crossVectors(right,
+        camera.getWorldDirection(new THREE.Vector3())).normalize();
+      pan.addScaledVector(right, -dx * k).addScaledVector(up, dy * k);
+    } else {
+      sph.theta -= dx * 0.0075;
+      sph.phi = Math.max(0.08, Math.min(Math.PI - 0.08, sph.phi - dy * 0.0075));
+    }
+    place();
+  });
+  function endDrag(){ drag = null; }
+  canvas.addEventListener("pointerup", endDrag);
+  canvas.addEventListener("pointercancel", endDrag);
+  canvas.addEventListener("contextmenu", function(e){ e.preventDefault(); });
+  canvas.addEventListener("wheel", function(e){
+    e.preventDefault();
+    sph.r = Math.max(span * 0.35, Math.min(span * 5, sph.r * (1 + Math.sign(e.deltaY) * 0.11)));
+    place();
+  }, {passive:false});
+
+  /* ── legend ─────────────────────────────────────────────── */
+  var GROUPS = [["printed","Printed in PETG"],["bought","Bought parts"],["media","Water"]];
+  var legend = document.getElementById("legend");
+  GROUPS.forEach(function(g){
+    var any = parts.filter(function(p){ return p.def.group === g[0]; });
+    if (!any.length) return;
+    var h = document.createElement("h2"); h.textContent = g[1]; legend.appendChild(h);
+    any.forEach(function(p){
+      var b = document.createElement("button");
+      b.className = "row"; b.type = "button"; b.setAttribute("aria-pressed", "true");
+      b.innerHTML = '<span class="sw" style="background:' + p.def.color + '"></span>' +
+                    '<span class="n"></span><span class="t mono"></span>';
+      b.querySelector(".n").textContent = p.def.label;
+      b.querySelector(".t").textContent = p.def.tris.toLocaleString();
+      b.addEventListener("click", function(){
+        p.on = !p.on;
+        b.setAttribute("aria-pressed", String(p.on));
+        applyExplode();
+      });
+      p.btn = b;
+      legend.appendChild(b);
+    });
+  });
+
+  /* ── explode / section ──────────────────────────────────── */
+  var t = 0;
+  function applyExplode(){
+    parts.forEach(function(p){
+      var e = p.def.explode;
+      p.mesh.position.set(e[0]*t, e[1]*t, e[2]*t);
+      // water and the cable route only make sense assembled; the trim
+      // spacer is an optional part, so it only appears once pulled apart
+      var auto = (p.def.name === "water" || p.def.name === "cable") ? t < 0.02
+               : (p.def.name === "spacer") ? t > 0.02
+               : true;
+      p.mesh.visible = p.on && auto;
+      if (p.btn) p.btn.style.opacity = auto ? "" : ".45";
+    });
+  }
+  var exEl = document.getElementById("ex"), exv = document.getElementById("exv");
+  exEl.addEventListener("input", function(){
+    t = +exEl.value / 100; exv.textContent = exEl.value + "%"; applyExplode();
+  });
+
+  // The plane keeps CAD y >= cut, so raising the cut pares away the half
+  // nearest the camera. Travel stops just past the centre plane: that is
+  // the section that shows the bore, the water and the feed port at once,
+  // and sweeping the full bbox would just empty the screen at one end.
+  var clEl = document.getElementById("cl"), clv = document.getElementById("clv");
+  var cutMin = lo[1] - 2, cutMax = 8;
+  clEl.addEventListener("input", function(){
+    var f = +clEl.value / 100;
+    if (f >= 0.999){ clipPlane.constant = 1e6; clv.textContent = "off"; return; }
+    var y = cutMin + (cutMax - cutMin) * (1 - f);
+    clipPlane.constant = -y;
+    clv.textContent = y.toFixed(0) + " mm";
+  });
+
+  document.getElementById("reset").addEventListener("click", function(){
+    sph.theta = -0.62; sph.phi = 1.16; sph.r = span * 1.85;
+    pan.set(0, 0, 0); place();
+  });
+  var spinning = false, spinBtn = document.getElementById("spin");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  spinBtn.addEventListener("click", function(){
+    spinning = !spinning; spinBtn.setAttribute("aria-pressed", String(spinning));
+  });
+
+  /* ── theme-aware stage colour ───────────────────────────── */
+  function paint(){
+    var c = getComputedStyle(document.body).getPropertyValue("--stage").trim();
+    if (c) renderer.setClearColor(new THREE.Color(c), 1);
+  }
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paint);
+  new MutationObserver(paint).observe(document.documentElement,
+    {attributes:true, attributeFilter:["data-theme"]});
+
+  /* ── resize + loop ──────────────────────────────────────── */
+  function resize(){
+    var r = canvas.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    renderer.setSize(r.width, r.height, false);
+    camera.aspect = r.width / r.height;
+    camera.updateProjectionMatrix();
+  }
+  addEventListener("resize", resize);
+  new ResizeObserver(resize).observe(canvas);
+
+  applyExplode(); resize(); paint(); place();
+
+  var last = performance.now();
+  (function loop(now){
+    requestAnimationFrame(loop);
+    var dt = Math.min((now - last) / 1000, 0.05); last = now;
+    if (spinning && !reduce && !drag){ sph.theta -= dt * 0.32; place(); }
+    renderer.render(scene, camera);
+  })(last);
+})();
+</script>

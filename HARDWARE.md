@@ -258,8 +258,13 @@ floats during boot and the strip flashes on at full brightness every reset.
 | Inside | Outside |
 |---|---|
 | SHT31-D (mid-height, away from the fogger plume and the LED) | ESP-01, PCF8574, all MOSFET modules |
-| LED strip (**IP65+ sealed only**) | Mist maker reservoir + transducer |
-| Fan outlet / inlet ducting | PSU and buck converters |
+| LED strip (**IP65+ sealed only**) | Mist maker chamber, module and reservoir |
+| The fog hose, entering high | PSU and buck converters |
+
+The mist maker does not sit in the tank. It runs in a printed chamber that holds
+its water at a constant level and pipes the fog in through a 25 mm hose — parts,
+print settings and assembly in **[cad/README.md](cad/README.md)**, and an
+interactive model of it in **[cad/VIEWER.md](cad/VIEWER.md)**.
 
 Everything outside lives in a ventilated enclosure. The inside of the tank is a
 permanently condensing 90 %RH environment — unsealed electronics corrode in weeks.

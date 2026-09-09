@@ -402,3 +402,36 @@ the band, clearing the probe by 2.6 mm and splashing by 4.0.
 
 The 2 mm trim spacer covers the other direction: fit it under the module if the
 level lands high and the unit spits droplets instead of fog.
+
+## D22 — The assembly model is generated, not drawn.
+
+Once the parts were rebuilt, the obvious next thing was a picture of them
+together. The temptation is to model that separately — quicker to draw, and it
+only has to *look* right.
+
+`cad/assembly.scad` instead `include`s `params.scad` and `use`s `mister.scad`,
+so the printed parts in it are literally the printed parts. The bought parts are
+built from their own documentation rather than from memory: the module from
+[MIST-MAKER.md](MIST-MAKER.md) §4 (Ø45 potted base, 20 mm splash collar, Ø20
+disc recessed at 22 mm, probe beside it), the reservoir as a standard PET neck
+finish. So the fits it shows are the real fits, and a change to `water_hold`
+moves the water in the picture.
+
+The same file feeds the interactive viewer through `export_parts.scad`, which
+means the browser model, the rendered stills and the STLs the printer gets all
+come from one set of numbers. A separately-drawn assembly would have been a
+fourth version of the truth, and the whole point of D15 is that this design has
+already been bitten by versions of the truth that only looked right.
+
+Two things fell out of building it that are worth keeping:
+
+- **It made D20 obvious.** The chamber is 99 mm; with the reservoir the assembly
+  is 322 mm, and nearly all the mass is at the top on a 41 mm arm. The
+  arithmetic said the same thing, but nobody feels an arithmetic tipping moment.
+- **WebGL sections beat OpenSCAD sections.** OpenSCAD paints cut faces in the
+  colour scheme's cutout colour whatever `color()` says, and `--render` discards
+  per-part colours entirely; capping the cut with a real `projection()`
+  cross-section works but costs a CGAL render per part. A clipping plane in the
+  browser does it per fragment, in colour, live, and is draggable.
+
+How to run it: **[cad/VIEWER.md](cad/VIEWER.md)**.
