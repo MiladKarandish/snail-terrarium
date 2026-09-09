@@ -129,7 +129,7 @@ room gets cold in winter.
 |---|---|
 | Humidity floor **78 %**, ceiling **90 %** | Below ~70 % snails seal into their shells and stop eating; above ~95 % the tank grows mould and the substrate sours. 78–90 % sits comfortably inside that with room for sensor error. |
 | Hysteresis **6 %** | Fogger plumes are locally saturated. A narrow band makes the output chatter every time the plume crosses the sensor. |
-| Min switch **300 s** on the mister | Ultrasonic transducers degrade under rapid cycling, and a 10-second burst humidifies the air without ever reaching the substrate. |
+| Min switch **300 s** on the mister | Ultrasonic transducers degrade under rapid cycling, and a 10-second burst humidifies the air without ever reaching the substrate. Comfortably above the module's own 10 s on / 15 s off floor ([MIST-MAKER.md §2.2](MIST-MAKER.md)). |
 | Mister window **06:00–22:00** | A sealed tank cools overnight and its RH climbs on its own. Misting into that just condenses on the glass. |
 | Fan hysteresis arranged **below** the mister's off-point | Prevents the two outputs oscillating against each other — the classic humidifier/dehumidifier fight. |
 | Photoperiod **12 h** | Enough for moss photosynthesis without pushing algae; matches a temperate seasonal midpoint. |
@@ -175,7 +175,9 @@ The 24 h graph tells you what to change:
 
 | Failure | Consequence | Mitigation |
 |---|---|---|
-| Mist maker runs dry | Transducer burns out in minutes | Keep the reservoir above the minimum line; the active window and min-switch interval cap daily run time; check weekly |
+| Reservoir empties | Fog stops; humidity sags | The module has its own conductivity probe and shuts off at 41 mm, so it **cannot** burn out dry ([MIST-MAKER.md §3](MIST-MAKER.md)). Watch the humidity trend and the bottle, not the transducer. |
+| Hard water scales the disc | Output halves within weeks, then the ceramic cracks | **Use RO or distilled water.** Descale in 50:50 white vinegar for 20–30 min when output drops |
+| Mist maker PWM'd instead of switched | Driver overheats, no cavitation | Output mode must be Manual/Sensor/Interval — never the PWM channel. GPIO3 is the LED's, not the mister's |
 | SHT31-D dies or drifts | Endless fogging or a bone-dry tank | Firmware failsafe forces outputs off after 60 s of fault — verify it by unplugging the sensor during commissioning |
 | WiFi drops | — | Automation runs entirely on-device; WiFi is only for the dashboard. Nothing stops. |
 | Power loss | Outputs off, tank coasts | A sealed 47 L tank holds its humidity for many hours. Settings persist in flash and reload on boot. |

@@ -1,5 +1,5 @@
 // Cut-away: chamber + lid/standpipe + module + water + bottle neck.
-include <params.scad>
+include <legacy_params.scad>
 use <chamber.scad>
 use <lid.scad>
 difference() {

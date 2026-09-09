@@ -16,3 +16,25 @@ The replacement runs the feed **outside** the chamber wall, entering through a
 port at the water line, which keeps the bore at Ø60.
 
 Kept for reference only. Do not print.
+
+---
+
+## Second wave: the first bottle-fed body
+
+`mister_section.scad`, `gasket.scad` and `cap_chamber.scad` joined them later,
+for different reasons:
+
+- **`gasket.scad`** — the TPU neck washer. Replaced by the captured PET cap,
+  whose own liner does the sealing. That is what a bottle cap liner is *for*.
+- **`cap_chamber.scad`** — an alternative two-part cup-and-top arrangement,
+  never built. It still hangs a standpipe inside beside the module, so it has
+  the same Ø80 problem as everything else here.
+- **`mister_section.scad`** — sectioned the *STL files* rather than the model,
+  so it showed whatever was last exported instead of what the source says.
+  Replaced by `../section2d.scad`, which sections the real solids.
+
+The body those were drawn against was itself replaced after a boolean audit
+found eight defects in it, three of them fatal — see **D15** in
+[../../DESIGN-DECISIONS.md](../../DESIGN-DECISIONS.md). Retired parameters those
+files still need live in `legacy_params.scad`, so they open and render, but
+nothing here is current.

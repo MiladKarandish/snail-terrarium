@@ -2,7 +2,7 @@
 //  Lid + Mariotte standpipe, one part.
 //  PRINT PLATE-TOP-DOWN. Origin = plate underside = chamber rim.
 // ─────────────────────────────────────────────────────────────
-include <params.scad>
+include <legacy_params.scad>
 
 sp_len = lid_pos_z - (ch_floor + water_level);   // lid down to the level
 

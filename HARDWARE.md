@@ -27,7 +27,7 @@ the firmware is the source of truth; this document tracks it.
 
 | Qty | Part | Typical spec — **confirm yours** |
 |:--:|---|---|
-| 1 | **Ultrasonic mist maker, 550 mL/h** | Commonly **24 V DC, 0.5–1 A**; some modules are 12 V |
+| 1 | **Ultrasonic mist maker, 550 mL/h** | **24 V DC, 0.75 A (18 W)** — confirmed [ECA 3791](MIST-MAKER.md) |
 | 1 | **Fan** | 5 V or 12 V DC, 0.1–0.3 A (40–80 mm) |
 | 1 | **Neon LED strip, 1 m** | Analog (**not** WS2812/addressable), 12 V, ~0.5–1 A/m, **IP65+** |
 
@@ -104,15 +104,19 @@ Firmware `#define`s these live behind:
 | 3.3 V | PCF8574 | < 100 µA (+ pull-up currents) |
 | 12 V | LED strip, 1 m | 0.5–1.0 A |
 | 12 V | Fan | 0.1–0.3 A |
-| 24 V | Mist maker, 550 mL/h | 0.5–1.0 A |
+| 24 V | Mist maker, 550 mL/h | **0.75 A** running, **1.3 A** inrush |
 
 **Total worst case ≈ 24 W.** Size the PSU with ≥30 % headroom.
 
+> The mist maker draws a **1.1–1.3 A transient for ~100 ms** while its
+> oscillator acquires resonance ([MIST-MAKER.md §2.1](MIST-MAKER.md)). Size the
+> 24 V rail for that, not for the 0.75 A running figure, or every mist cycle
+> browns out whatever shares the supply.
+
 ### Recommended topology
 
-Confirm the mist maker's voltage first — it decides the layout.
-
-**If the mist maker is 24 V:**
+The mist maker is **24 V DC**, confirmed — [MIST-MAKER.md](MIST-MAKER.md). It
+contains a high-frequency inverter and will not run on 12 V, on 19 V, or on AC.
 
 ```
   24 V 3 A PSU ──┬──────────────────────────────► Mist maker (via MOSFET #1)
@@ -123,10 +127,13 @@ Confirm the mist maker's voltage first — it decides the layout.
                  └──[buck → 3.3 V]──────────────► ESP-01 + SHT31-D + PCF8574
 ```
 
-**If the mist maker is 12 V:** drop the 24 V rail entirely — one **12 V 3 A PSU**
-feeds all three loads directly, with a single buck to 3.3 V for the logic.
-
 ### Power rules
+
+- **Never PWM the mist maker.** Its driver is an analog self-oscillating LC
+  inverter that needs 50–200 ms of continuous DC to build its tank. Chopping the
+  rail heats the transistor and prevents cavitation. Switch it on and off in
+  seconds, not in duty cycle — see [AUTOMATION.md](AUTOMATION.md).
+- Switch its **negative** lead with the N-channel MOSFET module.
 
 - **Never power the ESP-01 from 5 V.** It is a 3.3 V part with no on-board regulator.
 - **Never back-feed load current through the MCU rail.** Loads take their power

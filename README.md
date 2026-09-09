@@ -76,7 +76,7 @@ Full control strategy and setpoint mapping: **[AUTOMATION.md](AUTOMATION.md)**.
 | 1 | **ESP8266 (ESP-01)** | Controller — WiFi, web UI, automation logic |
 | 2 | **SHT31-D** | I²C temperature + humidity sensor (±0.2 °C, ±2 %RH) |
 | 3 | **PCF8574** | I²C 8-bit I/O expander — frees the ESP-01's TX/RX for outputs |
-| 4 | **550 mL/h ultrasonic mist maker** | Humidifier — raises RH |
+| 4 | **550 mL/h ultrasonic mist maker** | Humidifier — raises RH. **24 V DC, 0.75 A** — [MIST-MAKER.md](MIST-MAKER.md) |
 | 5 | **Fan** | Air exchange / circulation — lowers RH, prevents mould |
 | 6 | **1 m neon LED strip** | Circadian lighting, analog (non-addressable) |
 | 7 | **2 × XY-MOS 400 W MOSFET module** | High-current switches for the loads |
@@ -159,10 +159,21 @@ raises `MAX_OUTPUTS` from 2 to 8.
 
 ```
 snail-terrarium/
-├── README.md        ← you are here: what the project is
-├── HARDWARE.md      ← bill of materials, wiring, pin map, power, safety
-└── AUTOMATION.md    ← climate strategy, output config, tuning
+├── README.md              ← you are here: what the project is
+├── HARDWARE.md            ← bill of materials, wiring, pin map, power, safety
+├── AUTOMATION.md          ← climate strategy, output config, tuning
+├── MIST-MAKER.md          ← datasheet for the atomiser module
+├── DESIGN-DECISIONS.md    ← why the printed parts are shaped the way they are
+└── cad/                   ← the printed mist chamber
+    ├── params.scad        ← every dimension, with its source
+    ├── mister.scad        ← body, lid, trim spacer
+    ├── checks.scad        ← geometry that exists only to be measured
+    ├── verify.py          ← nothing is printed until this passes
+    └── superseded/        ← earlier designs, kept for reference. Do not print.
 ```
+
+Build the parts with `../.venv/bin/python cad/verify.py` — it renders the STLs
+into `cad/stl/` and refuses to leave a failing part behind.
 
 Firmware lives in its own repository:
 [`esp8266-climate-pro`](https://github.com/MiladKarandish/esp8266-climate-pro).
@@ -186,9 +197,15 @@ Firmware lives in its own repository:
 
 ## 8. Safety and animal-welfare notes
 
-- **Ultrasonic misters must never run dry** — the disc burns out in minutes.
-  Keep the reservoir above the minimum line, and cap run time with the
-  firmware's interval/active-window limits.
+- **This module cannot run dry** — it carries its own conductivity probe and
+  stops below 41 mm ([MIST-MAKER.md §3](MIST-MAKER.md)). That is worth stating
+  plainly because most advice about ultrasonic foggers assumes the opposite, and
+  every dry-run guard in the early versions of this design was solving a problem
+  the hardware had already solved. What *does* kill it is **hard water**: scale
+  on the disc halves the output within weeks and eventually cracks the ceramic.
+  Use RO or distilled water.
+- **Never PWM the mist maker.** Its driver is a self-oscillating inverter that
+  needs continuous DC. Switch it on and off in whole seconds.
 - **Keep all electronics outside the tank.** The inside is a permanently
   condensing 90 %RH environment; only the sensor and the LED strip go in, and
   the strip must be a sealed (IP65+) type.

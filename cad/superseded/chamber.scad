@@ -3,7 +3,7 @@
 //  the lid. Prints upright, open end up: no support anywhere.
 //  PETG, 100 um, >=4 perimeters.
 // ─────────────────────────────────────────────────────────────
-include <params.scad>
+include <legacy_params.scad>
 
 module chamber() {
     difference() {

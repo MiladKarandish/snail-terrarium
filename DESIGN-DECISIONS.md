@@ -264,12 +264,141 @@ Everything drawn before this is in `cad/superseded/`.
 
 ## D14 — Open questions
 
-- **Water level datum.** The spec says "effective water level 20–75 mm" without
-  stating the datum. Read here as *above the module's top face* (consistent with
-  how this class of module is always specified, and with the 45 mm module height
-  making a 20 mm total depth impossible). Worth confirming on first fill: if
-  fogging is weak at the refill line, the datum is the vessel floor and both
-  lines move up by 45 mm.
+- ~~**Water level datum.**~~ **Settled** by [MIST-MAKER.md](MIST-MAKER.md): the
+  disc sits ~22 mm above the base in a recessed well, and the vendor's
+  "20–75 mm" is the column *above the disc*. Depths here are total depth from
+  the surface the module stands on, which is the chamber floor.
 - **Mounting.** Hang-on-back bracket vs. table stand — deferred deliberately.
   The chamber is mounting-agnostic; the bracket is a separate part, so this
   choice does not block anything.
+- **Cap dimensions.** `cap_od` and `cap_h` are for a standard PET cap and must
+  be **measured on the bottle you will actually use** before printing. They set
+  the pocket, and the pocket is the one joint the Mariotte depends on.
+
+## D15 — The design was audited by boolean, and it did not survive.
+
+Everything from D13 onwards was drawn, rendered, checked by a harness that
+reported 26/26, and looked right. Measuring it with booleans instead of reading
+it found **eight defects, three of them fatal**:
+
+```
+  feed bore blocked by a 3 mm slug          337.9 mm3 of PETG across the conduit
+  lid collided with the bottle socket       375.6 mm3 - it could not be fitted
+  2 of 4 fan screw holes opened into the      1.7 mm3 breach at z 46.4-49.4,
+    chamber BELOW the water line                     under water
+  fan bore dipped 0.4 mm under the water    breach at z 49.0-49.4
+  nozzle spigot bonded to the barrel by       0.2 mm3 - a hairline
+  module "recess" cut into the UNDERSIDE    0.9 mm membrane holding the water
+  fan bore was a plain horizontal hole      needed support the file said it did not
+  flange was a 2.5 mm square ledge          a 90° overhang right round the part
+```
+
+The first two mean the thing could not be assembled, let alone work. Every one
+was invisible in a render and invisible to arithmetic.
+
+**What made the old harness miss them:** it checked *numbers* — is the port at
+the water line, does the module fit the bore — and every number was right. The
+defects were all in the *relationships between solids*, which only a boolean
+sees. `verify.py` now renders the real parts and asks topological questions of
+them; `checks.scad` exists only to be measured.
+
+## D16 — A leak is a topology question, not a dimension.
+
+The strongest check in the harness does not measure anything. It takes a box up
+to the water line, subtracts the body, and **counts the voids**:
+
+```
+  2  correct: the wetted cavity (joined to the conduit through the port,
+              which is the entire point of the port) and the outside air
+  1  the wall is breached somewhere - it leaks
+  3  the port never connected - the bottle feeds nothing
+```
+
+One number, and it cannot be satisfied by accident. It caught a defect that
+arithmetic could not: the nozzle was tilted with `rotate([-45,0,0])`, which
+tips +Y **downward**, so the fog outlet left the wall *below* the water line.
+The parametric clearance check passed — it was computing where the nozzle was
+*supposed* to be. The void count went to 1.
+
+Every boolean check that can have a control has one: the lid one millimetre low
+*must* collide, a 3 mm hole through the wall *must* merge the voids, a slug in
+the conduit *must* split it. A test that cannot fail passes forever.
+
+## D17 — Nothing that must not leak is left to two cylinders grazing each other.
+
+The old feed column relied on the conduit and the barrel overlapping by 1.2 mm
+where their surfaces crossed. That is a cusp: a zero-angle crevice, the weakest
+joint FDM can produce, and the feed port was bored straight through it.
+
+The conduit is now joined to the barrel by a **solid web**, and the web is
+deliberately wider than the port (18 mm against 12). That matters for more than
+strength: if the port broke out of the web's side, air would reach the conduit
+directly and the Mariotte would stop regulating and simply drain.
+
+The same rule killed the old fan pad and nozzle. A flat plate floating off a
+Ø63 barrel touches it along a sliver — the nozzle's entire bond to the chamber
+was **0.2 mm³**. The fan pad is now a boss filled solid back to the barrel, and
+the nozzle starts *inside* the bore so the wall cut trims it, rather than being
+butted against the outside.
+
+## D18 — A teardrop fixes a hole. It cannot fix a protrusion.
+
+Teardrops were used everywhere on the old part, including places they do nothing.
+The distinction:
+
+- A horizontal **hole** can be given a 45° roof, because the material above it
+  is ours to shape. Every hole here is a teardrop — fan bore, feed port, even
+  the Ø3.2 screw holes.
+- A horizontal **protrusion** cannot. The underside of a round spigot sticking
+  out of a wall is a 90° overhang whatever its cross-section, and cutting it
+  back to 45° leaves a V that no hose will seal against.
+
+So the nozzle is **tilted 45° up**. An inclined cylinder has every normal on its
+underside at exactly the tilt angle, so at 45° the spigot *and its bore* are
+self-supporting while staying perfectly round for the hose. Fog rises into it,
+and condensate runs back into the chamber instead of dripping out of the hose.
+
+The remaining overhang on the whole body is **9.4 mm²** of tessellation facets
+at 48°, around the teardrop screw holes. `verify.py` measures this on the actual
+triangles, in the actual print orientation — the lid is evaluated flipped,
+because it prints plate-top-down.
+
+## D19 — The cable leaves through the lid.
+
+The old design notched the rim. A notch is free to print but it is a hole in the
+side of a fog generator: fog leaves through it and runs down the outside.
+
+MIST-MAKER.md §4 records something the earlier work did not know — the cable
+ships with **a sliding conical rubber bung, 14 mm tapering to 11 mm, meant for a
+chamfered hole**. A hole in the lid is vertical in the print, so it comes out
+round and takes that bung; the countersink narrows as it rises and needs no
+support either. The rim notch, and the matching notch in the lid that had to line
+up with it, are both gone.
+
+## D20 — The foot exists because the bottle is a lever.
+
+A full 0.5 L bottle is **520 g on a 41 mm arm, 190 mm up**. Standing on the
+barrel alone, the centre of mass sits about 30 mm off-axis inside a support edge
+at 48 mm: the assembly tips at roughly 5°, next to a glass tank full of animals.
+
+The foot is a 2.4 mm plate hulled from the barrel out under the column. It also
+anchors a 136 mm tall print to the bed, which a Ø63 footprint does not.
+
+**A bottle larger than 0.5 L must be supported independently.** 1.5 L is 1.5 kg
+on the same arm and no foot fixes that.
+
+## D21 — The level is not the port height.
+
+Air has to break *into* the port as a bubble before water can leave, and that
+costs `4σ/d` of head — **2.4 mm of water on a Ø12 port**. The level therefore
+settles somewhere between the port's apex and 2.4 mm below it.
+
+That is why the port is Ø12 rather than something tidier: the head goes as `1/d`,
+so a narrow port is a level *error*, not a saving. And it is why the target is
+**46 mm rather than the arithmetic centre of the 42–47 band**. Centring the port
+would have put the low end of the real range at 42.5 mm — 1.5 mm from the probe
+cut-off that stops the unit. At 46 the real range is 43.6–46.0, entirely inside
+the band, clearing the probe by 2.6 mm and splashing by 4.0.
+
+The 2 mm trim spacer covers the other direction: fit it under the module if the
+level lands high and the unit spits droplets instead of fog.

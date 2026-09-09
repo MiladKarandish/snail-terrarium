@@ -16,7 +16,7 @@
 //  half and leaves its lower 53 mm floating. The standpipe is
 //  therefore unioned AFTER the skirt is hollowed.
 // ─────────────────────────────────────────────────────────────
-include <params.scad>
+include <legacy_params.scad>
 
 sp_len     = vessel_cut_h - water_level;   // reaches down to the held level
 plate_od   = vessel_od + skirt_slop + 2*skirt_wall + 4;

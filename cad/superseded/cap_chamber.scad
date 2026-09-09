@@ -1,7 +1,7 @@
 // Bottle-fed cap chamber (the Thingiverse/MakerWorld approach), sized
 // for THIS module rather than a 20 mm disc. Two parts: a cup the module
 // drops into, and a top carrying the bottle socket + standpipe.
-include <params.scad>
+include <legacy_params.scad>
 cc_id    = 58;                       // module 45 + fog clearance
 cc_wall  = 1.6;
 cc_od    = cc_id + 2*cc_wall;

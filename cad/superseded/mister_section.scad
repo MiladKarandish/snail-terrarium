@@ -1,4 +1,4 @@
-include <params.scad>
+include <legacy_params.scad>
 use <mister.scad>
 difference() {
     union() {

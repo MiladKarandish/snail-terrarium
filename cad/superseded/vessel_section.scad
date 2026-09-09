@@ -1,5 +1,5 @@
 // Cut-away: cut PET bottle as the chamber + vessel_lid + reservoir bottle.
-include <params.scad>
+include <legacy_params.scad>
 use <vessel_lid.scad>
 sp_len = vessel_cut_h - water_level;
 difference() {
