@@ -119,8 +119,14 @@ The gauge is hidden below 1080 px wide, where there is no room for it.
 `mister.scad`, `assembly.scad` or `export_parts.scad`. Change a dimension and
 the next run rebuilds against it.
 
+The figures in the title block — chamber size, mass, water level, wetted volume,
+checks passed — are **not written into the template**. `verify.py` publishes them
+to `.build/facts.json` on every run and `viewer.py` substitutes them, so the page
+can only ever quote numbers that were actually verified. Build the viewer without
+having run `verify.py` and they show as `?` rather than as something stale.
+
 Positions are quantised to `uint16` against **one bounding box shared by every
-part**, which is what keeps them in register with each other and turns 1.5 MB of
+part**, which is what keeps them in register with each other and turns 3 MB of
 STL into a 207 KB blob. Geometry is de-indexed before normals are computed, so
 the parts render flat-shaded: these are machined faces, not organic surfaces,
 and smooth normals would round off every edge the design depends on.

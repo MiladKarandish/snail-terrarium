@@ -18,7 +18,7 @@ Geometry comes from export_parts.scad, which pulls the printed parts from
 mister.scad and the bought parts from assembly.scad, so the viewer cannot
 drift away from what verify.py checks and the printer gets.
 """
-import argparse, http.server, os, socketserver, subprocess, sys, pathlib, urllib.request
+import argparse, http.server, json, os, socketserver, subprocess, sys, pathlib, urllib.request
 
 CAD    = pathlib.Path(__file__).resolve().parent
 BUILD  = CAD / ".build"
@@ -91,6 +91,24 @@ def build(cdn: bool) -> pathlib.Path:
 
     html = TPL.read_text()
     html = html.replace("__PARTS_JSON__", blob)
+
+    # The title block quotes what verify.py actually measured, so it cannot
+    # drift from the checked design. verify.py writes these on every run.
+    facts = BUILD / "facts.json"
+    if facts.exists():
+        f = json.loads(facts.read_text())
+        for k, v in {"__F_OD__": f["chamber_od"], "__F_H__": f["chamber_h"],
+                     "__F_G__": f["grams"], "__F_WL__": f["water_hold"],
+                     "__F_ML__": f["wetted_ml"], "__F_MIN__": f["burst_min"],
+                     "__F_PASS__": f["passed"], "__F_TOT__": f["total"]}.items():
+            html = html.replace(k, str(v))
+    elif "__F_" in html:
+        print("  no .build/facts.json - run verify.py so the title block can "
+              "quote real numbers", file=sys.stderr)
+        html = html.replace("__F_OD__", "?").replace("__F_H__", "?") \
+                   .replace("__F_G__", "?").replace("__F_WL__", "?") \
+                   .replace("__F_ML__", "?").replace("__F_MIN__", "?") \
+                   .replace("__F_PASS__", "?").replace("__F_TOT__", "?")
     html = html.replace("__THREE__", THREE_TAG if cdn else three_js())
     OUT.mkdir(exist_ok=True)
     dst = OUT / "index.html"

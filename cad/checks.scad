@@ -110,3 +110,22 @@ else if (TEST == "water")
         translate([0, 0, ch_floor - eps]) cylinder(d = mm_module_od,
                                                    h = mm_module_h + eps);
     }
+
+// ── 8. THE HOSE ACTUALLY GOES ON ─────────────────────────────
+// Slide a length of hose down the nozzle axis until it fouls the
+// barrel. A tilted spigot leaves a round barrel unevenly - the top
+// of it is buried far deeper than the bottom - and the SHORT side
+// is what the hose end stops against, so that is the engagement
+// you really get. Eyeballing the render will not tell you.
+module hose_sleeve(engage) {
+    s1 = ch_od/2/cos(nozzle_tilt) + nozzle_len;
+    translate([0, 0, nozzle_axis_z]) rotate([nozzle_tilt, 0, 0])
+        rotate([-90, 0, 0]) translate([0, 0, s1 - engage])
+            difference() {
+                cylinder(d = nozzle_od + 2*hose_wall, h = engage + 25);
+                translate([0, 0, -eps])
+                    cylinder(d = nozzle_od + 0.3, h = engage + 25 + 2*eps);
+            }
+}
+if (TEST == "hosefit")
+    intersection() { body(); hose_sleeve(CTL ? hose_engage + 8 : hose_engage); }

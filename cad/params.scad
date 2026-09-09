@@ -104,9 +104,13 @@ duct_clear        = 6.0;   // clear air under the lowest duct opening
 // Sized around a hose you can actually buy: the spigot OD is the
 // hose's ID, so nozzle_d is what is left after the wall.
 nozzle_hose_id    = 25;    // standard 25 mm ID pond/aquarium hose
+hose_engage       = 15;    // clear spigot the hose must be able to sit on:
+                           // 0.6x the bore, enough to clamp behind
+hose_wall         = 3.0;   // a 25 mm ID hose is about this thick, and it is
+                           // the hose's OUTER BACK CORNER that fouls the
+                           // barrel first - not its bore
 nozzle_wall       = 2.5;
 nozzle_d          = nozzle_hose_id - 2*nozzle_wall;   // Ø20 fog bore
-nozzle_len        = 18;
 // TILTED 45° UP, and that is not styling. A teardrop fixes a
 // horizontal HOLE, because the material above it can be shaped.
 // It cannot fix a horizontal PROTRUSION: the underside of a round
@@ -144,6 +148,13 @@ duct_z            = ch_floor + water_hold + duct_clear + fan_bore/2;
 // headspace and checking afterwards.
 water_z           = ch_floor + water_hold;        // absolute water surface
 nozzle_od         = nozzle_hose_id;
+// A tilted spigot leaves a round barrel unevenly: its top side is buried
+// far deeper than its bottom, and the SHORT side is what the hose end
+// stops against. Clearing the barrel costs (hose outer radius)*tan(tilt)
+// of spigot before any of it can be used, so the length is derived from
+// the engagement wanted rather than picked. At 18 mm it looked generous
+// on screen and gave the hose 2.5 mm to sit on.
+nozzle_len        = hose_engage + (nozzle_od/2 + hose_wall)*tan(nozzle_tilt);
 // Placed by where its bore breaks through the wall, so the bottom
 // of the opening clears the water by duct_clear.
 nozzle_exit_z     = water_z + duct_clear + (nozzle_d/2)/cos(nozzle_tilt);

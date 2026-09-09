@@ -12,7 +12,7 @@ Three kinds of check, in increasing order of how much they are worth:
 The middle group is the one that matters. Every defect this harness now
 catches was present in a revision that the previous harness passed.
 """
-import re, subprocess, sys, pathlib, math, numpy as np, trimesh
+import json, re, subprocess, sys, pathlib, math, numpy as np, trimesh
 
 CAD = pathlib.Path(__file__).resolve().parent
 STL = CAD / "stl"; STL.mkdir(exist_ok=True)
@@ -109,6 +109,12 @@ inlet, outlet = math.pi/4*P["fan_bore"]**2, math.pi/4*P["nozzle_d"]**2
 chk("inlet does not throttle the outlet", inlet >= outlet,
     f"fan {inlet:.0f} mm2 vs nozzle {outlet:.0f} mm2 - they are in series, "
     "so the smaller one sets throughput")
+chk("nozzle is long enough to clear the barrel AND take the hose",
+    P["nozzle_len"] >= P["hose_engage"] + (P["nozzle_od"]/2 + P["hose_wall"])
+                       * math.tan(math.radians(P["nozzle_tilt"])) - .01,
+    f"{P['nozzle_len']:.1f} mm spigot = {P['hose_engage']:.0f} mm of hose + "
+    f"{(P['nozzle_od']/2 + P['hose_wall'])*math.tan(math.radians(P['nozzle_tilt'])):.1f} mm "
+    "spent clearing the barrel")
 chk("nozzle clears the flange",
     P["ch_h"] - P["ch_flange_h"] - P["nozzle_top"] >= 2,
     f"{P['ch_h'] - P['ch_flange_h'] - P['nozzle_top']:.1f} mm to the flange")
@@ -210,6 +216,14 @@ chk("module drops in without fouling anything", vol(geom("module")) < 1.0,
     f"Ø{P['mm_module_od']:.0f} x {P['mm_module_h']:.0f} module, "
     f"{vol(geom('module')):.2f} mm3 of fouling")
 
+hose, hose_ctl = geom("hosefit"), geom("hosefit", 1)
+chk("hose seats on the nozzle", vol(hose) < 1.0,
+    f"{P['hose_engage']:.0f} mm of clear spigot for a Ø{P['nozzle_hose_id']:.0f} "
+    f"hose, {vol(hose):.2f} mm3 of fouling")
+chk("  ...and that test can fail", vol(hose_ctl) > 20,
+    f"control: {P['hose_engage']+8:.0f} mm of hose fouls the barrel by "
+    f"{vol(hose_ctl):.0f} mm3")
+
 held = vol(geom("water"))/1000
 burst = held/9.2                                   # 550 mL/h = 9.2 mL/min
 chk("chamber holds enough for a sensible burst", burst >= 3,
@@ -254,6 +268,16 @@ for part, (define, flip) in PARTS.items():
     area, worst, where = overhangs(m, flip)
     chk(f"{part}: prints without support", area < 20,
         f"{area:.1f} mm2 overhanging past 45° (worst {worst:.0f}°{where})")
+
+# Publish the headline numbers so nothing downstream has to hardcode them.
+# The viewer's title block reads this, which is why its figures cannot drift
+# away from what was actually verified.
+(TMP / "facts.json").write_text(json.dumps({
+    "chamber_od": round(P["ch_od"], 1), "chamber_h": round(P["ch_h"], 1),
+    "grams": round(total/1000*1.27), "water_hold": round(P["water_hold"], 1),
+    "wetted_ml": round(held), "burst_min": round(burst, 1),
+    "passed": sum(ok for ok, _, _ in res), "total": len(res),
+}, indent=1))
 
 bad = sum(not ok for ok, _, _ in res)
 w = max(len(n) for _, n, _ in res)

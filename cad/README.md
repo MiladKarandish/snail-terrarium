@@ -28,11 +28,11 @@ What the module needs: **[../MIST-MAKER.md](../MIST-MAKER.md)**.
 
 | File | Part | Qty | Size | PETG |
 |---|---|---|---|---|
-| `stl/mister_body.stl` | Chamber, feed column, bottle socket | 1 | 98 × 91 × 136 mm | 84 cm³, ~106 g |
+| `stl/mister_body.stl` | Chamber, feed column, bottle socket | 1 | 98 × 100 × 145 mm | 90 cm³, ~114 g |
 | `stl/mister_lid.stl` | Lid with cable gland | 1 | 67 × 68 × 9 mm | 16 cm³, ~20 g |
 | `stl/mister_spacer.stl` | Trim spacer — only if the level lands high, see *Commissioning* | 0–1 | 43 × 43 × 2 mm | 2 cm³, ~3 g |
 
-Total for the build: **~102 cm³, ~129 g of PETG.**
+Total for the build: **~108 cm³, ~137 g of PETG.**
 
 Also needed, not printed:
 
@@ -40,7 +40,8 @@ Also needed, not printed:
   bases sit crooked, and here it is the **cap** that matters anyway.
 - A **30 mm or 40 mm fan**, 5 V or 12 V. The pad is drilled for both (24 mm and
   32 mm bolt pitch). 4 × M3 screws.
-- **25 mm ID hose** for the fog line, and a clamp or zip tie.
+- **25 mm ID hose** for the fog line, and a clamp or zip tie. The spigot
+  gives it **15 mm** of clear seat, with room to clamp behind the end.
 - **Epoxy** for the cap.
 - **RO or distilled water.** Not optional — see [MIST-MAKER.md §5](../MIST-MAKER.md).
 
@@ -50,13 +51,16 @@ Also needed, not printed:
 ../.venv/bin/python verify.py
 ```
 
-Renders the STLs into `stl/` and runs 45 checks. **It must print `45/45` before
+Renders the STLs into `stl/` and runs 48 checks. **It must print `48/48` before
 anything goes to a printer.** It checks levels against the datasheet band, fits
 and clearances, that the wall is unbreached below the water line, that the lid
-seats *and* comes off, that the feed is actually open end to end, and that
-nothing on either part overhangs past 45° in its print orientation. Several
-checks run twice, once with a defect injected that must fail — a test that
-cannot fail is not a test.
+seats *and* comes off, that the feed is actually open end to end, that a hose
+will go far enough onto the nozzle, and that nothing on either part overhangs
+past 45° in its print orientation. Five checks run twice, once with a defect
+injected that must fail — a test that cannot fail is not a test.
+
+It also writes `.build/facts.json`, which is where the viewer's title block gets
+its figures, so nothing downstream quotes a number that was not verified.
 
 Change a number in `params.scad`, run it again.
 

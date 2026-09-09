@@ -382,7 +382,7 @@ barrel alone, the centre of mass sits about 30 mm off-axis inside a support edge
 at 48 mm: the assembly tips at roughly 5°, next to a glass tank full of animals.
 
 The foot is a 2.4 mm plate hulled from the barrel out under the column. It also
-anchors a 136 mm tall print to the bed, which a Ø63 footprint does not.
+anchors a 145 mm tall print to the bed, which a Ø63 footprint does not.
 
 **A bottle larger than 0.5 L must be supported independently.** 1.5 L is 1.5 kg
 on the same arm and no foot fixes that.
@@ -435,3 +435,46 @@ Two things fell out of building it that are worth keeping:
   browser does it per fragment, in colour, live, and is draggable.
 
 How to run it: **[cad/VIEWER.md](cad/VIEWER.md)**.
+
+## D23 — A tilted spigot is shorter than it looks.
+
+Spotted in the viewer, not in a check: the fog nozzle looked far too short to
+push a hose onto. Measuring it was worse than looking at it. Sliding a modelled
+hose down the nozzle axis until it fouled the barrel gave **under 4 mm** of
+usable seat on an 18 mm spigot.
+
+The reason is geometry that only applies to an *inclined* protrusion. A spigot
+leaving a round barrel at 45° is buried unevenly — its upper side runs much
+deeper into the wall than its lower side — and the hose stops against the
+**short** side. Worse, it is the hose's outer *back corner* that hits first, not
+its bore, so the length lost is set by the hose's OUTER radius:
+
+```
+  lost to clearing the barrel = (hose OD/2) x tan(tilt)
+                              = (25/2 + 3) x tan(45°)
+                              = 15.5 mm
+```
+
+Fifteen and a half millimetres of an 18 mm spigot were spent before the hose
+could touch any of it. The screen showed a nozzle of respectable length, and
+essentially none of it was usable.
+
+**The fix is to derive the length rather than pick it.** `nozzle_len` is now
+`hose_engage + (nozzle_od/2 + hose_wall)*tan(nozzle_tilt)` — 30.5 mm, of which
+15 mm is clear seat with room to clamp behind the hose end. `verify.py` slides
+the real hose down the real axis and checks it fouls nothing, with a control at
++8 mm that must foul.
+
+**What it costs.** The nozzle rises at 45°, so a longer one reaches higher, and
+the chamber is derived to keep it clear of the flange. The chamber grew from
+98.9 mm to **107.7 mm**, and the build from 129 g to **137 g** — about 8 g, or
+6 %, for a hose joint that actually holds. Both numbers fall straight out of
+`params.scad`; shortening `hose_engage` shortens the part again if that trade
+ever looks wrong.
+
+**Why no check caught it.** Every existing nozzle check asked about the *bore* —
+does it clear the water, does it clear the flange, does it throttle the fan. Not
+one asked whether the thing a human has to attach could be attached. That is a
+recurring shape in this design's history (D15, D16): the checks tested the part
+against itself, and the defect was in the part's relationship to something else.
+The new check models the hose.
