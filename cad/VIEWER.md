@@ -40,13 +40,37 @@ Needs `openscad` on the PATH and the project's venv (`trimesh`, `numpy`).
    `cad/viewer/index.html`. The page is one self-contained file — geometry,
    styles, script and three.js are all inlined — so it needs no server and
    no network. Nothing about it depends on being served over HTTP.
-3. **The published artifact**, if you want it on a phone or to send to
-   someone: <https://claude.ai/code/artifact/39a16ace-5516-4eab-a32e-9712b58abccf>.
-   Same template, built with `--cdn`.
+3. **On the web**, for a phone or to send to someone:
+   **<https://snail-terrarium-mister.vercel.app>**. Deployed from `viewer/` — see *Deploying* below.
+   There is also a Claude artifact of the same page at
+   <https://claude.ai/code/artifact/39a16ace-5516-4eab-a32e-9712b58abccf>.
 
-`viewer/index.html` is generated and **gitignored**. `viewer/template.html` is
-the source and is tracked. If you only want a picture, four stills rendered from
-the same model are committed in `stl/views/`.
+`viewer/index.html` is **committed**, not treated as build output. It is a
+document of the project in its own right: it opens on any machine, years from
+now, with no toolchain, no network and no OpenSCAD. The cost is that every
+rebuild writes a fresh ~835 KB file into history — worth it for a page that
+still works when nothing else does. `viewer/template.html` is its source.
+
+If you only want a picture, four stills rendered from the same model are
+committed in `stl/views/`.
+
+## Deploying
+
+```bash
+../.venv/bin/python viewer.py --deploy
+```
+
+Builds, then pushes to Vercel as a production deployment. Building first is the
+point — deploying a stale `index.html` is the easy mistake, and going through
+`viewer.py` makes it impossible.
+
+The Vercel project is **snail-terrarium-mister** on the personal scope, linked
+to `cad/viewer/` as a static directory: no framework, no build step, no server.
+`.vercelignore` keeps `template.html` out of the deployment, so the placeholder
+version is never public. `.vercel/` is local link state and is gitignored.
+
+Deployments are **public to anyone with the URL**. Nothing here is sensitive,
+but that is worth knowing before sharing a link.
 
 ---
 

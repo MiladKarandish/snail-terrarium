@@ -8,6 +8,8 @@
                                              needs a network to open)
     ../.venv/bin/python viewer.py --force    re-export the meshes even if the
                                              cached ones look current
+    ../.venv/bin/python viewer.py --deploy   build, then push to Vercel as a
+                                             production deployment
 
 The page it writes is ONE self-contained file: geometry, styles, script and
 (by default) three.js itself are all inlined, so viewer/index.html opens
@@ -118,6 +120,14 @@ def build(cdn: bool) -> pathlib.Path:
     return dst
 
 
+def deploy() -> None:
+    """Ship the page to Vercel. Building first is the point: deploying a
+    stale index.html is the easy mistake, and this makes it impossible."""
+    r = subprocess.run(["vercel", "deploy", "--prod", "--yes"], cwd=OUT)
+    if r.returncode != 0:
+        sys.exit("vercel deploy failed - is the CLI logged in? (vercel whoami)")
+
+
 def serve(port: int) -> None:
     os.chdir(OUT)
     socketserver.TCPServer.allow_reuse_address = True
@@ -135,12 +145,16 @@ if __name__ == "__main__":
     ap.add_argument("--build", action="store_true", help="build and stop")
     ap.add_argument("--cdn", action="store_true", help="do not inline three.js")
     ap.add_argument("--force", action="store_true", help="re-export all meshes")
+    ap.add_argument("--deploy", action="store_true",
+                    help="build, then deploy to Vercel (production)")
     ap.add_argument("--port", type=int, default=8017)
     a = ap.parse_args()
 
     export(a.force)
     dst = build(a.cdn)
-    if a.build:
+    if a.deploy:
+        deploy()
+    elif a.build:
         print(f"open it directly: file://{dst}")
     else:
         serve(a.port)

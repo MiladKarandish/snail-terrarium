@@ -172,7 +172,8 @@ snail-terrarium/
     ├── checks.scad        ← geometry that exists only to be measured
     ├── verify.py          ← nothing is printed until this passes
     ├── assembly.scad      ← everything together, printed and bought parts
-    ├── viewer.py          ← builds/serves an interactive 3D assembly
+    ├── viewer.py          ← builds/serves/deploys an interactive 3D assembly
+    ├── viewer/index.html  ← that assembly, self-contained. Open it anywhere
     └── superseded/        ← earlier designs, kept for reference. Do not print.
 ```
 
@@ -180,7 +181,7 @@ Build the parts with `../.venv/bin/python cad/verify.py` — it renders the STLs
 into `cad/stl/` and refuses to leave a failing part behind. To see how it all
 goes together, `../.venv/bin/python cad/viewer.py` builds and serves an
 interactive 3D assembly you can orbit, explode and section —
-[cad/VIEWER.md](cad/VIEWER.md).
+[cad/VIEWER.md](cad/VIEWER.md). It is live at <https://snail-terrarium-mister.vercel.app>.
 
 Firmware lives in its own repository:
 [`esp8266-climate-pro`](https://github.com/MiladKarandish/esp8266-climate-pro).

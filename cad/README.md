@@ -76,6 +76,9 @@ slider for a live cutting plane through the bore, the water and the feed port.
 `--build` writes a single self-contained `viewer/index.html` you can open
 straight off the disk, with no server and no network.
 
+It is also live at **<https://snail-terrarium-mister.vercel.app>**; `viewer.py --deploy`
+rebuilds and pushes it.
+
 Full reference, controls and troubleshooting: **[VIEWER.md](VIEWER.md)**.
 
 `assembly.scad` also renders stills directly:
