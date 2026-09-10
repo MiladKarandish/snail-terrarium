@@ -174,6 +174,8 @@ snail-terrarium/
     ├── assembly.scad      ← everything together, printed and bought parts
     ├── viewer.py          ← builds/serves/deploys an interactive 3D assembly
     ├── viewer/index.html  ← that assembly, self-contained. Open it anywhere
+    ├── stl/               ← the printable meshes
+    ├── render/            ← pictures of the assembly
     └── superseded/        ← earlier designs, kept for reference. Do not print.
 ```
 

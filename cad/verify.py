@@ -28,7 +28,10 @@ def scad(src, out, defines=()):
     an empty result, so a stale file would be read back as this run's output.
     That bug once made the harness report a clean part as colliding."""
     out = pathlib.Path(out); out.unlink(missing_ok=True)
-    args = []
+    # Binary STL, not OpenSCAD's default ASCII: 3.5x smaller for identical
+    # geometry, and these are rewritten on every run, so ASCII would put a
+    # fresh 3 MB of text into the history each time a dimension changed.
+    args = ["--export-format", "binstl"] if out.suffix == ".stl" else []
     for d in defines:
         args += ["-D", d]
     r = subprocess.run(["openscad", "-o", str(out), *args, str(CAD / src)],

@@ -4,6 +4,41 @@ Why the printed parts are shaped the way they are. Each entry records what was
 considered and what settled it, so a future change starts from the reasoning
 rather than re-deriving it.
 
+**Nothing here is deleted when it turns out to be wrong.** Several of these were
+reversed — twice, in one case — and the reversals are the most useful entries in
+the file. The index says which still hold, so you do not have to read all of it
+to find out.
+
+| | Decision | Status |
+|---|---|---|
+| **D1** | Mariotte reservoir, chosen on cost | dropped by D11, reinstated by D13 |
+| **D2** | Nothing mounts on the terrarium lid | holds |
+| **D3** | PETG, and the seal is not a print | holds, but the gasket became a captured bottle cap |
+| **D4** | The fog port is a teardrop | superseded by **D18** — teardrops fix holes, not spigots |
+| **D5** | The lid seats on the rim and prints upside down | holds |
+| **D6** | Levels referenced to the module's top face | superseded by **D14** — datum settled from the datasheet |
+| **D7** | Nothing is printed until `verify.py` passes | holds, and **D15**/**D16** say why it was not enough |
+| **D8** | The chamber is a cut PET bottle | superseded by **D13** |
+| **D9** | Wall thickness is a multiple of the nozzle | holds |
+| **D10** | A jar would also work | superseded by **D13** |
+| **D11** | The reservoir outlived its justification | **reversed by D13** |
+| **D12** | Vents and the fog port are in series | holds, as the fan and the nozzle |
+| **D13** | The module was measured, and it invalidated everything | **holds — the pivot** |
+| **D14** | Open questions | live |
+| **D15** | The design was audited by boolean, and it did not survive | holds |
+| **D16** | A leak is a topology question, not a dimension | holds |
+| **D17** | Nothing that must not leak is left to two cylinders grazing | holds |
+| **D18** | A teardrop fixes a hole, not a protrusion | holds |
+| **D19** | The cable leaves through the lid | holds |
+| **D20** | The foot exists because the bottle is a lever | holds |
+| **D21** | The level is not the port height | holds |
+| **D22** | The assembly model is generated, not drawn | holds |
+| **D23** | A tilted spigot is shorter than it looks | holds |
+
+If you read only three: **D13** (measuring the real module invalidated the whole
+design), **D15** (the rebuilt design still had eight defects, three fatal) and
+**D16** (why watertightness is checked by counting voids).
+
 ---
 
 ## D1 — Mariotte reservoir, chosen on cost.

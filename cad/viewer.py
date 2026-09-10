@@ -10,6 +10,8 @@
                                              cached ones look current
     ../.venv/bin/python viewer.py --deploy   build, then push to Vercel as a
                                              production deployment
+    ../.venv/bin/python viewer.py --stills   re-render the still images in
+                                             render/ and stop
 
 The page it writes is ONE self-contained file: geometry, styles, script and
 (by default) three.js itself are all inlined, so viewer/index.html opens
@@ -120,6 +122,31 @@ def build(cdn: bool) -> pathlib.Path:
     return dst
 
 
+# The four views in render/, and the true vertical section. Rendered from the
+# same assembly.scad the viewer uses, so they cannot show a different part.
+STILLS = [
+    ("assembly.png",        "1000,1500", "66", "205", "EXPLODE=0"),
+    ("assembly_detail.png", "1200,1000", "62", "205", "EXPLODE=0;BOTTLE=0"),
+    ("exploded.png",        "1000,1600", "68", "205", "EXPLODE=1"),
+    ("section.png",         "1100,1100", "80", "16",  "SECTION=1;BOTTLE=0"),
+]
+
+
+def stills() -> None:
+    out = CAD / "render"; out.mkdir(exist_ok=True)
+    for name, size, elev, azim, defs in STILLS:
+        print(f"  rendering {name} ...", flush=True)
+        subprocess.run(["openscad", "-o", str(out / name), "--imgsize", size,
+                        "--viewall", "--autocenter",
+                        "--camera", f"0,0,0,{elev},0,{azim},0",
+                        "--colorscheme", "Tomorrow", "-D", defs,
+                        str(CAD / "assembly.scad")], capture_output=True)
+    print("  rendering section.svg ...", flush=True)
+    subprocess.run(["openscad", "-o", str(out / "section.svg"),
+                    str(CAD / "section2d.scad")], capture_output=True)
+    print(f"wrote {len(STILLS) + 1} images to {out.relative_to(CAD.parent)}")
+
+
 def deploy() -> None:
     """Ship the page to Vercel. Building first is the point: deploying a
     stale index.html is the easy mistake, and this makes it impossible."""
@@ -147,8 +174,14 @@ if __name__ == "__main__":
     ap.add_argument("--force", action="store_true", help="re-export all meshes")
     ap.add_argument("--deploy", action="store_true",
                     help="build, then deploy to Vercel (production)")
+    ap.add_argument("--stills", action="store_true",
+                    help="re-render the still images in render/ and stop")
     ap.add_argument("--port", type=int, default=8017)
     a = ap.parse_args()
+
+    if a.stills:
+        stills()
+        raise SystemExit(0)
 
     export(a.force)
     dst = build(a.cdn)

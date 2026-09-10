@@ -51,8 +51,8 @@ now, with no toolchain, no network and no OpenSCAD. The cost is that every
 rebuild writes a fresh ~835 KB file into history — worth it for a page that
 still works when nothing else does. `viewer/template.html` is its source.
 
-If you only want a picture, four stills rendered from the same model are
-committed in `stl/views/`.
+If you only want a picture, five images rendered from the same model are
+committed in `render/`; `viewer.py --stills` re-renders them.
 
 ## Deploying
 

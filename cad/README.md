@@ -81,12 +81,51 @@ rebuilds and pushes it.
 
 Full reference, controls and troubleshooting: **[VIEWER.md](VIEWER.md)**.
 
-`assembly.scad` also renders stills directly:
+If you just want pictures rather than something to spin:
 
 ```bash
-openscad -o out.png --viewall --autocenter --camera=0,0,0,68,0,205,0 \
-         -D "EXPLODE=1" assembly.scad          # EXPLODE / SECTION / BOTTLE
+../.venv/bin/python viewer.py --stills
 ```
+
+re-renders the five images in `render/` from the same model. `assembly.scad`
+takes `EXPLODE` (0–1), `SECTION` and `BOTTLE` if you want a view of your own.
+
+## How the level holds itself
+
+Water only leaves the bottle if air can get in to replace it. That is not a
+detail — it is the whole mechanism, and the port does both jobs:
+
+```
+   bottle                    air goes UP the same tube the water comes DOWN
+     │  water down
+     ▼  ▲ air up             1. level sits at the port's apex
+   ┌────┴───┐                2. it drops slightly - evaporation, or a burst
+   │        │  Ø12 conduit   3. the apex is now above water, exposed to the
+   │        │                   chamber's air
+   │   ┌────┴──┐             4. air bubbles in, rises the conduit, reaches
+   │   │ apex  │ ◄─ port        the bottle
+ ══╪═══╪══════════ water     5. an equal volume of water runs out, the level
+   │   │       │                rises and re-seals the apex
+```
+
+Nothing measures anything and nothing switches. The level is set by where the
+air can get in, which is a printed edge, and it is stable because sealing that
+edge stops the flow.
+
+Three things have to be true, and all three are checked or specified:
+
+- **The conduit must be wide enough for air and water to pass each other.**
+  Ø12; counter-flow stalls below about 6 mm. The whole air path — port, conduit,
+  the hole you drill in the cap — is Ø10 or wider.
+- **The chamber must be vented.** It is, through the fan bore and the nozzle,
+  both well above the water. A sealed chamber cannot let air into the port and
+  the feed stalls.
+- **The bottle must be sealed except through the conduit.** That is the epoxied
+  cap. If air leaks in past it, the bottle drains instead of regulating — which
+  is the failure listed in *Commissioning*.
+
+The fan blowing into the chamber does not shift the level: the same pressurised
+air presses on the water surface *and* is what enters the port, so it cancels.
 
 ## Print settings
 
@@ -171,11 +210,11 @@ bottle is the first place you will see it.
 | `mister.scad` | The parts |
 | `checks.scad` | Geometry that exists only to be measured. Not printed |
 | `verify.py` | The gate — run this before printing anything |
-| `qa.py` | Standalone watertight/volume check over `stl/`. Superseded by `verify.py`, which does this and much more |
 | `section2d.scad` | True vertical section, rendered from the real solids |
 | `assembly.scad` | The whole thing together, printed and bought parts. Not printable |
 | `export_parts.scad` | Splits the assembly into meshes for the viewer |
 | `viewer.py` + `viewer/` | Builds and serves the interactive 3D assembly — see [VIEWER.md](VIEWER.md) |
 | `tools/pack_viewer.py` | Packs those meshes into the viewer's geometry blob |
-| `stl/` | Rendered STLs, plus `views/` — assembled, exploded, detail and section |
+| `stl/` | The printable meshes, binary STL. Written by `verify.py` |
+| `render/` | Pictures of the assembly — assembled, detail, exploded, section, and a true vertical section as SVG. Written by `viewer.py --stills` |
 | `superseded/` | Earlier designs. Kept for reference — **do not print** |
