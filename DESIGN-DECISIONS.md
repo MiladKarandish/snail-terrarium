@@ -627,13 +627,39 @@ The pad height is now **derived from the widest pattern it claims to take**
 rather than picked:
 
 ```
-  fan_pad = fan_pitch_40 + 2*fan_seat + 2*(fan_face_r - ch_od/2)
-          = 32 + 3.2 + 13.04  =  48.24 mm
+  fan_pad = fan_pitch_max + 2*fan_seat + 2*(fan_face_r - ch_od/2)
 ```
 
-which is 42 → 48.24, and leaves exactly `fan_seat` of flat under the lowest
-screw by construction. `fan_pad_top` stays below `nozzle_top`, so `ch_h` does
-not move.
+which leaves exactly `fan_seat` of flat under the lowest screw by construction,
+whatever patterns the pad carries. `fan_pad_top` stays below `nozzle_top`, so
+`ch_h` does not move.
+
+**And since the pad now sizes itself, it may as well carry a third pattern.**
+Which fan actually does the job through a Ø26 bore is a question you answer by
+trying them, so 24, 32 and 40 mm pitches are all drilled: 30, 40 and 50 mm fans
+bolt straight on, and `fan_pad` follows the widest at 59.93 mm. Twelve blind
+holes, 2.46 mm of material between the closest pair.
+
+The range is bounded at both ends by the barrel, not by choice:
+
+```
+  25 mm fan  20 mm pitch   1.3 mm of screw wall   under the 1.6 limit
+  30 mm fan  24 mm pitch   2.1 mm                 the tightest one drilled
+  50 mm fan  40 mm pitch   7.2 mm                 pad_top 98.2 < 99.7
+  60 mm fan  50 mm pitch   pad wraps past the barrel AND pushes ch_h up
+```
+
+The narrow end is the dangerous one and it is not obvious: the barrel curves
+*closest to the pad* at small pitches, so it is the 30 mm fan's screws, not the
+50 mm fan's, that come nearest to opening into the water. `verify.py` takes
+`fan_pitch_min` for that check and `fan_pitch_max` for the seat, which are
+different patterns.
+
+Worth saying plainly, since it decides what to buy: **fan diameter is not what
+sets performance here.** Every fan blows through the same Ø26 bore and out the
+same Ø20 nozzle, so the duct is the restriction and what matters is static
+pressure, not the airflow figure on the box. A 30 mm at 12 V can beat a 50 mm
+at 5 V.
 
 **The check is geometric, and its control is history.** `verify.py` now finds
 the pad's seating face on the real triangles — normals at −x, at the pad plane —

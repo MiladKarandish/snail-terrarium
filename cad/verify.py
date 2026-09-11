@@ -125,11 +125,22 @@ chk("fan pad clears the flange",
     P["ch_h"] - P["ch_flange_h"] - P["fan_pad_top"] >= 2,
     f"{P['ch_h'] - P['ch_flange_h'] - P['fan_pad_top']:.1f} mm to the flange")
 # a screw hole that reaches the bore is a hole in a water tank
-inner_y = P["fan_pitch_30"]/2                    # worst case: the tighter pattern
+# Every pattern the pad is drilled for, worst case first: the barrel
+# curves CLOSEST to the pad at the narrowest pitch, so that is the one
+# that can come out inside the water.
+FAN_PITCHES = [(P["fan_pitch_30"], "30 mm"), (P["fan_pitch_40"], "40 mm"),
+               (P["fan_pitch_50"], "50 mm")]
+inner_y = P["fan_pitch_min"]/2                   # worst case: the tightest pattern
 wall_x  = math.sqrt((P["ch_id"]/2)**2 - inner_y**2)
 hole_x  = P["ch_od"]/2 + P["fan_pad_t"] - P["fan_screw_depth"]
 chk("fan screws stay out of the chamber", hole_x - wall_x >= 1.6,
-    f"{hole_x - wall_x:.2f} mm of wall past the deepest screw")
+    f"{hole_x - wall_x:.2f} mm of wall past the deepest screw, at the "
+    f"{P['fan_pitch_min']:.0f} mm pitch where the barrel is closest")
+chk("pad is drilled for the fans it claims",
+    P["fan_pitch_min"] >= 24 and P["fan_pitch_max"] <= 40,
+    f"{', '.join(f for _, f in FAN_PITCHES)} fans "
+    f"({', '.join(f'{p:.0f}' for p, _ in FAN_PITCHES)} mm pitch); 25 mm fans "
+    f"leave only 1.3 mm of screw wall and 60 mm wraps past the barrel")
 
 # ── the Mariotte feed ────────────────────────────────────────────
 chk("conduit bore stays outside the barrel",
@@ -308,7 +319,7 @@ def fan_seat_margin(m):
     if not len(pts):
         return -99.0, "no flat pad face at all"
     worst = None
-    for pitch, fan in ((P["fan_pitch_40"], "40 mm"), (P["fan_pitch_30"], "30 mm")):
+    for pitch, fan in FAN_PITCHES:
         for zs, end in ((-1, "lower"), (1, "upper")):
             hy, hz = pitch/2, P["duct_z"] + zs*pitch/2
             near = pts[np.abs(np.abs(pts[:, 1]) - hy) < 1.0]
@@ -345,8 +356,9 @@ for part, (define, flip) in PARTS.items():
             f"worst is the {which}: {seat:.2f} mm of flat below the hole. The "
             f"45° chamfer under the pad eats "
             f"{P['fan_face_r'] - P['ch_od']/2:.2f} mm into the face at the "
-            f"40 mm bolt circle, against {P['fan_face_r'] - P['ch_od']/2 - 3.0:.2f} "
-            f"mm more than at the centreline")
+            f"{P['fan_pitch_max']:.0f} mm bolt circle, "
+            f"{P['fan_face_r'] - P['ch_od']/2 - 3.0:.2f} mm more than at the "
+            f"centreline")
 
 # Publish the headline numbers so nothing downstream has to hardcode them.
 # The viewer's title block reads this, which is why its figures cannot drift

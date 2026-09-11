@@ -130,8 +130,21 @@ fan_bore          = 26;    // > nozzle_d: inlet must not throttle the outlet
 // previous revision ran them 12 mm deep, straight through the
 // wall and into the water.
 fan_pad_t         = 3.0;
-fan_pitch_40      = 32;
+// Three bolt patterns, because which fan actually does the job through
+// a Ø26 bore is a question you answer by trying them. Diameter is not
+// what decides it - everything goes through the same bore and out the
+// same Ø20 nozzle, so the fan's STATIC PRESSURE matters and its airflow
+// rating does not. A 30 mm at 12 V can beat a 50 mm at 5 V here.
+//
+// 25 mm fans (20 mm pitch) are deliberately NOT drilled: the barrel
+// curves closest to the pad at narrow pitches, and a 5 mm screw there
+// leaves 1.3 mm of wall against the 1.6 mm limit. 60 mm and up cannot
+// work at all - the pad would wrap past the barrel and push ch_h up.
 fan_pitch_30      = 24;
+fan_pitch_40      = 32;
+fan_pitch_50      = 40;
+fan_pitch_max     = max(fan_pitch_30, fan_pitch_40, fan_pitch_50);
+fan_pitch_min     = min(fan_pitch_30, fan_pitch_40, fan_pitch_50);
 fan_screw_d       = 3.2;
 // The pad's flat face does NOT begin at its bottom edge. The 45°
 // chamfer under it - which is there so the underside is not the one
@@ -145,8 +158,8 @@ fan_screw_d       = 3.2;
 // fan and two screws loaded in bending. So the height is derived
 // from the widest pattern the pad claims to take, not picked.
 fan_seat          = 1.6;   // flat all round a screw before the chamfer
-fan_face_r        = sqrt(pow(ch_od/2 + fan_pad_t, 2) + pow(fan_pitch_40/2, 2));
-fan_pad           = fan_pitch_40 + 2*fan_seat + 2*(fan_face_r - ch_od/2);
+fan_face_r        = sqrt(pow(ch_od/2 + fan_pad_t, 2) + pow(fan_pitch_max/2, 2));
+fan_pad           = fan_pitch_max + 2*fan_seat + 2*(fan_face_r - ch_od/2);
 // 5 mm, not 8: at the 24 mm bolt pitch the barrel wall is closest to
 // the pad, and a deeper hole comes out inside the water.
 fan_screw_depth   = 5.0;

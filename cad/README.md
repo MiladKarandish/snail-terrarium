@@ -28,20 +28,24 @@ What the module needs: **[../MIST-MAKER.md](../MIST-MAKER.md)**.
 
 | File | Part | Qty | Size | PETG |
 |---|---|---|---|---|
-| `stl/mister_body.stl` | Chamber, feed column, bottle socket | 1 | 99 × 100 × 147 mm | 98 cm³, ~125 g |
+| `stl/mister_body.stl` | Chamber, feed column, bottle socket | 1 | 99 × 100 × 147 mm | 113 cm³, ~144 g |
 | `stl/mister_lid.stl` | Lid with cable gland | 1 | 67 × 68 × 9 mm | 16 cm³, ~20 g |
 | `stl/mister_spacer.stl` | Trim spacer — only if the level lands high, see *Commissioning* | 0–1 | 43 × 43 × 2 mm | 2 cm³, ~3 g |
 
-Total for the build: **~116 cm³, ~148 g of PETG.**
+Total for the build: **~132 cm³, ~167 g of PETG.**
 
 Also needed, not printed:
 
 - A **0.5 L still-water PET bottle** and its cap. Not carbonated — petaloid
   bases sit crooked. Any standard closure fits: 28 mm PCO-1881 or PCO-1810
   (soda) and 29/25 or 30/25 (water) are all within the socket's range.
-- A **30 mm or 40 mm fan**, 5 V or 12 V. The pad is drilled for both (24 mm and
-  32 mm bolt pitch) and is tall enough that **all four screws of either pattern
-  land on flat pad**, not on the chamfer under it — see **D25**. 4 × M3 screws.
+- A **30, 40 or 50 mm fan**, 5 V or 12 V. The pad is drilled for all three
+  (24, 32 and 40 mm bolt pitch) and is tall enough that **all four screws of any
+  pattern land on flat pad**, not on the chamfer under it — see **D25**.
+  4 × M3 screws. Pick on **static pressure, not airflow**: everything goes
+  through the same Ø26 bore and Ø20 nozzle, so the duct sets the restriction and
+  a small fast fan often beats a big slow one. 25 mm fans are not drilled (only
+  1.3 mm of screw wall) and 60 mm will not fit the barrel.
 - **25 mm ID hose** for the fog line, and a clamp or zip tie. The spigot
   gives it **15 mm** of clear seat, with room to clamp behind the end.
 - **Epoxy** for the cap.
@@ -53,7 +57,7 @@ Also needed, not printed:
 ../.venv/bin/python verify.py
 ```
 
-Renders the STLs into `stl/` and runs 56 checks. **It must print `56/56` before
+Renders the STLs into `stl/` and runs 57 checks. **It must print `57/57` before
 anything goes to a printer.** It checks levels against the datasheet band, fits
 and clearances, that the wall is unbreached below the water line, that the lid
 seats *and* comes off, that the feed is actually open end to end, that a hose

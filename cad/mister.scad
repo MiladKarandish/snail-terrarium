@@ -131,10 +131,14 @@ module body() {
             // fan bore, teardrop so it needs no support
             translate([-(ch_od/2 + fan_pad_t + eps), 0, duct_z])
                 teardrop_x(fan_bore, ch_od/2 + fan_pad_t + 10);
-            // fan screws: BLIND in the pad, both bolt patterns. These
-            // must never reach the bore - the previous revision ran them
-            // 12 mm deep, through the wall and into the water.
-            for (p = [fan_pitch_40, fan_pitch_30], y = [-1, 1], z = [-1, 1])
+            // fan screws: BLIND in the pad, all three bolt patterns, so
+            // a 30, 40 or 50 mm fan bolts straight on. They must never
+            // reach the bore - the previous revision ran them 12 mm deep,
+            // through the wall and into the water. The NARROWEST pattern
+            // is the dangerous one: that is where the barrel curves
+            // closest to the pad.
+            for (p = [fan_pitch_30, fan_pitch_40, fan_pitch_50],
+                 y = [-1, 1], z = [-1, 1])
                 translate([-(ch_od/2 + fan_pad_t + eps), y*p/2, duct_z + z*p/2])
                     teardrop_x(fan_screw_d, fan_screw_depth + eps);
             // nozzle bore, straight through from the cavity
