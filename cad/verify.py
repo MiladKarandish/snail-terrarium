@@ -294,6 +294,32 @@ def overhangs(m, flip):
     return (m.area_faces[bad].sum(), tilt[bad].max(),
             f", worst at z {zs.min():.0f}-{zs.max():.0f}")
 
+def fan_seat_margin(m):
+    """How much FLAT pad sits below each fan screw, measured on the real
+    triangles. The pad's seating face is the one whose normal is -x at
+    x = -(ch_od/2 + fan_pad_t); the 45 deg chamfer under the pad eats into
+    it from below, and by more the further out in y you go. A screw whose
+    hole opens on that chamfer has no seat: a gap under the fan and a bolt
+    loaded in bending."""
+    face_x = -(P["ch_od"]/2 + P["fan_pad_t"])
+    n, v = m.face_normals, m.triangles
+    sel = (n[:, 0] < -0.999) & (np.abs(v[:, :, 0].mean(axis=1) - face_x) < 0.05)
+    pts = v[sel].reshape(-1, 3)
+    if not len(pts):
+        return -99.0, "no flat pad face at all"
+    worst = None
+    for pitch, fan in ((P["fan_pitch_40"], "40 mm"), (P["fan_pitch_30"], "30 mm")):
+        for zs, end in ((-1, "lower"), (1, "upper")):
+            hy, hz = pitch/2, P["duct_z"] + zs*pitch/2
+            near = pts[np.abs(np.abs(pts[:, 1]) - hy) < 1.0]
+            if not len(near):
+                return -99.0, f"{fan} fan bolt circle is off the pad entirely"
+            margin = hz - near[:, 2].min()
+            if worst is None or margin < worst[0]:
+                worst = (margin, f"{fan} fan, {end} screws")
+    return worst
+
+
 total = 0.0
 for part, (define, flip) in PARTS.items():
     f, _ = scad("mister.scad", STL / f"{part}.stl", (define,))
@@ -312,6 +338,15 @@ for part, (define, flip) in PARTS.items():
     area, worst, where = overhangs(m, flip)
     chk(f"{part}: prints without support", area < 20,
         f"{area:.1f} mm2 overhanging past 45° (worst {worst:.0f}°{where})")
+    if part == "mister_body":
+        seat, which = fan_seat_margin(m)
+        chk("every fan screw opens on the pad's FLAT face",
+            seat >= P["fan_seat"] - 0.05,
+            f"worst is the {which}: {seat:.2f} mm of flat below the hole. The "
+            f"45° chamfer under the pad eats "
+            f"{P['fan_face_r'] - P['ch_od']/2:.2f} mm into the face at the "
+            f"40 mm bolt circle, against {P['fan_face_r'] - P['ch_od']/2 - 3.0:.2f} "
+            f"mm more than at the centreline")
 
 # Publish the headline numbers so nothing downstream has to hardcode them.
 # The viewer's title block reads this, which is why its figures cannot drift

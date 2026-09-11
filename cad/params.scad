@@ -129,11 +129,24 @@ fan_bore          = 26;    // > nozzle_d: inlet must not throttle the outlet
 // are BLIND in the pad and must never reach the chamber: the
 // previous revision ran them 12 mm deep, straight through the
 // wall and into the water.
-fan_pad           = 42;
 fan_pad_t         = 3.0;
 fan_pitch_40      = 32;
 fan_pitch_30      = 24;
 fan_screw_d       = 3.2;
+// The pad's flat face does NOT begin at its bottom edge. The 45°
+// chamfer under it - which is there so the underside is not the one
+// horizontal ceiling on the part - eats into that face from below,
+// and by more the further out you go in y: the face only exists once
+// the cone has grown past sqrt((ch_od/2 + fan_pad_t)^2 + y^2).
+//
+// At 42 mm the pad lost 3.0 mm of face at the centreline and 6.5 mm
+// at the 40 mm fan's bolt circle, which put its lower two screws
+// 1.75 mm ONTO the chamfer. They had no flat seat: a gap under the
+// fan and two screws loaded in bending. So the height is derived
+// from the widest pattern the pad claims to take, not picked.
+fan_seat          = 1.6;   // flat all round a screw before the chamfer
+fan_face_r        = sqrt(pow(ch_od/2 + fan_pad_t, 2) + pow(fan_pitch_40/2, 2));
+fan_pad           = fan_pitch_40 + 2*fan_seat + 2*(fan_face_r - ch_od/2);
 // 5 mm, not 8: at the 24 mm bolt pitch the barrel wall is closest to
 // the pad, and a deeper hole comes out inside the water.
 fan_screw_depth   = 5.0;

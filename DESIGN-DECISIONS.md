@@ -35,6 +35,7 @@ to find out.
 | **D22** | The assembly model is generated, not drawn | holds |
 | **D23** | A tilted spigot is shorter than it looks | holds |
 | **D24** | The socket is cut for the standard, not for one cap | holds |
+| **D25** | A chamfer takes the seat away before it takes the overhang | holds |
 
 If you read only three: **D13** (measuring the real module invalidated the whole
 design), **D15** (the rebuilt design still had eight defects, three fatal) and
@@ -593,3 +594,53 @@ landed on the same z and the Ø33.2 ring came to rest on the Ø32.4 bore's edge 
 correct *bound* and was then used as if it were a *clearance*. The grip now
 stops 1 mm below it (`cap_grip_margin`), and 7 mm still grips the shortest cap
 over most of its height.
+
+## D25 — A chamfer takes the seat away before it takes the overhang.
+
+The fan pad carries two bolt patterns, 24 mm and 32 mm, so whichever fan is in
+stock will fit. **D15** put a 45° chamfer under the pad, correctly: its flat
+underside would otherwise have been the one horizontal ceiling on the part. What
+nobody followed through was what the chamfer does to the *face above it*.
+
+The seating face only exists where the chamfer cone has grown past the corner it
+has to reach. That distance is not constant — it goes with `y`:
+
+```
+  ch_od/2 = 31.6                 the barrel
+  face at sqrt(34.6² + y²)       how far out the flat face really is
+
+  y =  0    face at 34.60    chamfer eats 3.00 mm of the pad
+  y = 12    face at 36.62    eats 5.02 mm   <- 30 mm fan bolt circle
+  y = 16    face at 38.12    eats 6.52 mm   <- 40 mm fan bolt circle
+```
+
+On a 42 mm pad that put the 40 mm fan's **lower two screws 1.75 mm below where
+the flat face starts** — their holes opened onto the chamfer. A 30 mm fan was
+fine, with 4.29 mm to spare. So "drilled for both" was half true, and the half
+that failed was the more common fan.
+
+The consequence is not cosmetic: the fan frame would bridge a gap at its lower
+edge and those two screws would be tightened into a slope, loading them in
+bending and levering at the chamfer's edge.
+
+The pad height is now **derived from the widest pattern it claims to take**
+rather than picked:
+
+```
+  fan_pad = fan_pitch_40 + 2*fan_seat + 2*(fan_face_r - ch_od/2)
+          = 32 + 3.2 + 13.04  =  48.24 mm
+```
+
+which is 42 → 48.24, and leaves exactly `fan_seat` of flat under the lowest
+screw by construction. `fan_pad_top` stays below `nozzle_top`, so `ch_h` does
+not move.
+
+**The check is geometric, and its control is history.** `verify.py` now finds
+the pad's seating face on the real triangles — normals at −x, at the pad plane —
+and measures how far the flat reaches down at each bolt circle. Run it against
+the body committed before this change and it reports −1.75 mm and fails. A test
+whose control is the part you shipped yesterday is the cheapest one to trust.
+
+The pattern is the same as **D24**: a feature added for a good reason (there, a
+counterbore; here, a chamfer) quietly consumed something else the design needed,
+and no check was watching the thing it consumed.

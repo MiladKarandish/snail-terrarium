@@ -28,11 +28,11 @@ What the module needs: **[../MIST-MAKER.md](../MIST-MAKER.md)**.
 
 | File | Part | Qty | Size | PETG |
 |---|---|---|---|---|
-| `stl/mister_body.stl` | Chamber, feed column, bottle socket | 1 | 99 × 100 × 147 mm | 94 cm³, ~119 g |
+| `stl/mister_body.stl` | Chamber, feed column, bottle socket | 1 | 99 × 100 × 147 mm | 98 cm³, ~125 g |
 | `stl/mister_lid.stl` | Lid with cable gland | 1 | 67 × 68 × 9 mm | 16 cm³, ~20 g |
 | `stl/mister_spacer.stl` | Trim spacer — only if the level lands high, see *Commissioning* | 0–1 | 43 × 43 × 2 mm | 2 cm³, ~3 g |
 
-Total for the build: **~112 cm³, ~142 g of PETG.**
+Total for the build: **~116 cm³, ~148 g of PETG.**
 
 Also needed, not printed:
 
@@ -40,7 +40,8 @@ Also needed, not printed:
   bases sit crooked. Any standard closure fits: 28 mm PCO-1881 or PCO-1810
   (soda) and 29/25 or 30/25 (water) are all within the socket's range.
 - A **30 mm or 40 mm fan**, 5 V or 12 V. The pad is drilled for both (24 mm and
-  32 mm bolt pitch). 4 × M3 screws.
+  32 mm bolt pitch) and is tall enough that **all four screws of either pattern
+  land on flat pad**, not on the chamfer under it — see **D25**. 4 × M3 screws.
 - **25 mm ID hose** for the fog line, and a clamp or zip tie. The spigot
   gives it **15 mm** of clear seat, with room to clamp behind the end.
 - **Epoxy** for the cap.
@@ -52,7 +53,7 @@ Also needed, not printed:
 ../.venv/bin/python verify.py
 ```
 
-Renders the STLs into `stl/` and runs 55 checks. **It must print `55/55` before
+Renders the STLs into `stl/` and runs 56 checks. **It must print `56/56` before
 anything goes to a printer.** It checks levels against the datasheet band, fits
 and clearances, that the wall is unbreached below the water line, that the lid
 seats *and* comes off, that the feed is actually open end to end, that a hose
