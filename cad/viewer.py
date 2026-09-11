@@ -8,8 +8,8 @@
                                              needs a network to open)
     ../.venv/bin/python viewer.py --force    re-export the meshes even if the
                                              cached ones look current
-    ../.venv/bin/python viewer.py --deploy   build, then push to Vercel as a
-                                             production deployment
+    ../.venv/bin/python viewer.py --deploy   build, then push to git, which
+                                             is what Vercel deploys from
     ../.venv/bin/python viewer.py --stills   re-render the still images in
                                              render/ and stop
 
@@ -148,11 +148,29 @@ def stills() -> None:
 
 
 def deploy() -> None:
-    """Ship the page to Vercel. Building first is the point: deploying a
-    stale index.html is the easy mistake, and this makes it impossible."""
-    r = subprocess.run(["vercel", "deploy", "--prod", "--yes"], cwd=OUT)
-    if r.returncode != 0:
-        sys.exit("vercel deploy failed - is the CLI logged in? (vercel whoami)")
+    """Ship the page. Vercel builds cad/viewer/ straight from GitHub on every
+    push to main, so shipping is committing the freshly built index.html and
+    pushing it. Building first is the point: deploying a stale index.html is
+    the easy mistake, and this makes it impossible."""
+    root = CAD.parent
+    rel  = OUT.relative_to(root)
+    git  = lambda *a, **k: subprocess.run(["git", *a], cwd=root, **k)
+
+    dirty = git("status", "--porcelain", "--", str(OUT),
+                capture_output=True, text=True).stdout.strip()
+    if dirty:
+        sys.exit(f"{rel}/index.html was just rebuilt and does not match HEAD.\n"
+                 f"The deployment is whatever is committed, so commit it first:\n"
+                 f"    git add {rel}/index.html\n"
+                 f"    git commit -m 'Rebuild the viewer'\n"
+                 f"then re-run --deploy.")
+
+    if git("push").returncode != 0:
+        sys.exit("git push failed - Vercel deploys what is on the remote, "
+                 "so nothing shipped.")
+    print(f"\n  pushed. Vercel is building {rel}/ - watch it with:\n"
+          f"    vercel inspect --wait snail-terrarium-mister.vercel.app\n"
+          f"  https://snail-terrarium-mister.vercel.app\n")
 
 
 def serve(port: int) -> None:
@@ -173,7 +191,7 @@ if __name__ == "__main__":
     ap.add_argument("--cdn", action="store_true", help="do not inline three.js")
     ap.add_argument("--force", action="store_true", help="re-export all meshes")
     ap.add_argument("--deploy", action="store_true",
-                    help="build, then deploy to Vercel (production)")
+                    help="build, then push; Vercel deploys the push")
     ap.add_argument("--stills", action="store_true",
                     help="re-render the still images in render/ and stop")
     ap.add_argument("--port", type=int, default=8017)

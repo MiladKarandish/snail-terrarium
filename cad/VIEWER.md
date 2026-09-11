@@ -60,17 +60,37 @@ committed in `render/`; `viewer.py --stills` re-renders them.
 ../.venv/bin/python viewer.py --deploy
 ```
 
-Builds, then pushes to Vercel as a production deployment. Building first is the
-point — deploying a stale `index.html` is the easy mistake, and going through
-`viewer.py` makes it impossible.
+Builds, checks that `viewer/index.html` matches HEAD, then pushes. **Vercel
+deploys from GitHub, not from your disk**: every push to `main` publishes
+whatever `cad/viewer/` holds at that commit. So the committed page and the live
+page are the same thing by construction, and the rebuild-before-deploy step is
+there to stop you committing a stale one.
 
-The Vercel project is **snail-terrarium-mister** on the personal scope, linked
-to `cad/viewer/` as a static directory: no framework, no build step, no server.
+If the build changed `index.html`, `--deploy` stops and tells you to commit it
+first. That is deliberate — pushing a page you have not committed is not
+possible, and committing one you have not rebuilt is the mistake this catches.
+
+The Vercel project is **snail-terrarium-mister** on the personal scope, with its
+**Root Directory set to `cad/viewer`** and no framework, build step or server.
+That setting is the whole configuration, and it is easy to get wrong: leave it
+at the repository root and Vercel happily serves the repo, with no `index.html`
+at `/` — a 404 on a deployment that reports as healthy.
 `.vercelignore` keeps `template.html` out of the deployment, so the placeholder
-version is never public. `.vercel/` is local link state and is gitignored.
+version is never public.
 
-Deployments are **public to anyone with the URL**. Nothing here is sensitive,
-but that is worth knowing before sharing a link.
+Deploying by hand from `cad/viewer/` with `vercel deploy` no longer works, and
+fails confusingly (`Root Directory "cad/viewer" does not exist`) because Vercel
+applies the root directory on top of whatever you upload. Push instead. To
+re-publish without a code change — after changing a project setting, say:
+
+```bash
+vercel redeploy snail-terrarium-mister.vercel.app
+```
+
+The production URL **<https://snail-terrarium-mister.vercel.app>** is public to
+anyone with the link. The longer per-deployment and `-milads-projects-` URLs are
+not: Vercel Authentication is on for the project, and they redirect to a Vercel
+login. Share the short one.
 
 ---
 
