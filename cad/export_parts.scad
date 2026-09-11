@@ -20,7 +20,8 @@ else if (PART == "cable")  cable();
 else if (PART == "bung")
     translate([-cable_hole_r, 0, ch_h + lid_t - 2]) bung();
 else if (PART == "cap")    translate([feed_centre, 0, pocket_z]) bottle_cap();
-else if (PART == "bottle") translate([feed_centre, 0, pocket_z + 2]) bottle();
+else if (PART == "bottle")
+    translate([feed_centre, 0, pocket_z + cap_floor_t]) bottle();
 else if (PART == "fan")
     translate([-(ch_od/2 + fan_pad_t), 0, duct_z]) rotate([0, -90, 0]) fan40();
 else if (PART == "screws")

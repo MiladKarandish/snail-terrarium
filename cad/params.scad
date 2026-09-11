@@ -213,23 +213,79 @@ feed_port_len     = (feed_centre + feed_id/2 - 3) - feed_port_x0;
 // one and the seal is the cap's own liner against the bottle rim.
 // Printing a PCO-1881 thread instead is a 3-start profile and a
 // coin toss on FDM tolerances for something that must not leak.
-cap_od            = 31.0;  // MEASURE your bottle cap across the knurl
-cap_h             = 14.0;  // MEASURE cap height
-cap_fit           = 0.35;  // press fit; epoxy makes it permanent AND seals
-                           // the one joint the Mariotte depends on
-cap_rib_n         = 6;     // anti-rotation ribs, so the cap cannot spin
-cap_rib_d         = 1.2;   // when the bottle is screwed in or out
-socket_wall       = 3.2;
-socket_od         = cap_od + 2*cap_fit + 2*socket_wall;
+//
+// The socket is cut for the STANDARDS, not for one measured cap.
+// Caps vary; the finishes they are moulded to do not. Across the
+// closures a 0.5 L bottle actually carries:
+//
+//   28 mm PCO-1881   soda, 2009-    cap Ø30.4 ±0.3   11-13 mm tall
+//   28 mm PCO-1810   soda, older    cap Ø31.0 ±0.4   14-17 mm tall
+//   29/25, 30/25     still water    cap Ø29.5-31      8-12 mm tall
+//
+// The DIAMETER spread is under 2 mm. The HEIGHT spread is 9 mm,
+// and height was the one that bit: pocket depth used to be tied
+// to cap height, and the top of the pocket is the face the
+// bottle's neck support ring lands on. A 16.5 mm cap put that
+// ring 0.26 mm INSIDE the socket and the bottle could not seat.
+cap_od_min        = 29.5;
+cap_od_max        = 31.4;
+cap_h_min         = 8.0;
+cap_h_max         = 17.0;
+cap_floor_t       = 1.5;   // cap's own top wall; the bottle's seal
+                           // face lands this far above the pocket floor
+// ISBT PCO-1881, drawing 3784253-21: the neck support ring is
+// Ø33.00 ±0.15 and sits H = 15.24 ±0.15 below the sealing face.
+// The ring is WIDER than the cap, so it can never enter the
+// pocket - it has to pass the socket in a counterbore above it.
+neck_ring_d       = 33.2;   // worst case across the finishes
+neck_ring_h       = 15.24;  // seal face to support ledge
+// Straight neck between the support ring and the shoulder - the neck
+// grippers on a filling line need it. NOT in the ISBT drawing, which
+// stops at the ring; this is the figure the assembly model has always
+// used, and it is the only unsourced number in the neck.
+neck_straight     = 4.5;
 
-// The socket has to sit ABOVE the lid: it is Ø38 on a 41 mm
+// The pocket grips the bottom of ANY of those caps and then opens
+// out. Because a cap must clear the support ring to screw on at
+// all, the ring is ALWAYS at or above the cap's rim - so a ribbed
+// section no taller than the shortest cap can never be in its
+// way. That is a structural argument, not a measured clearance.
+cap_pocket_id     = cap_od_max + 1.0;   // Ø32.4, every standard cap drops in
+// ...below it, not flush WITH it: at cap_grip_h = cap_h_min the grip's
+// top face and the lowest possible ring's underside land on the same
+// z, and the Ø33.2 ring rests on the Ø32.4 bore's edge. A bound is
+// not a clearance. 1 mm of margin, and 7 mm still grips the shortest
+// cap over most of its height.
+cap_grip_margin   = 1.0;
+cap_grip_h        = cap_h_min - cap_grip_margin;
+cap_rib_n         = 6;     // anti-rotation ribs, so the cap cannot spin
+cap_rib_d         = 1.2;   // when the bottle is screwed in or out. They
+                           // crush 0.2 mm on the widest cap and key the
+                           // epoxy on the narrowest - the epoxy is what
+                           // retains AND seals, as it always was.
+// Counterbore: wide enough that the support ring passes whatever
+// the cap height turns out to be. A hole that WIDENS as it rises
+// has no overhang, so this costs nothing in printability.
+neck_bore_id      = neck_ring_d + 1.3;  // Ø34.5
+socket_wall       = 3.2;
+socket_od         = neck_bore_id + 2*socket_wall;
+pocket_depth      = 16.0;  // pocket floor to socket top
+// A representative cap, for the ASSEMBLY DRAWING only. The
+// printed part does not depend on either number any more.
+cap_od            = 30.4;
+cap_h             = 12.0;
+
+// The socket has to sit ABOVE the lid: it is Ø41 on a 41 mm
 // offset, so it overlaps any lid big enough to cover a Ø60 bore.
 // The slim conduit below it is relieved in the lid instead.
 // Enough that the lid can be lifted clear of its own spigot BEFORE
 // the socket flare starts, or it cannot come off at all.
 lid_clear         = 4.0;
-socket_cone_h     = 12;    // ~42° from vertical, self-supporting
-pocket_depth      = cap_h + 1;
+// The flare is DERIVED from the angle rather than set to a height:
+// a wider socket needs a taller cone to stay self-supporting, and
+// hardcoding 12 mm quietly took this to 45.1° when socket_od grew.
+socket_cone_ang   = 42;    // from vertical; 45 is the printable limit
+socket_cone_h     = (socket_od - feed_od)/2 / tan(socket_cone_ang);
 
 // ── Lid ──────────────────────────────────────────────────────
 // Seats on the chamber rim; a spigot ring locates it in the bore.

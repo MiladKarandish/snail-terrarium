@@ -155,8 +155,36 @@ chk("port is wide enough that surface tension barely moves the level",
 chk("conduit passes air up while water runs down", P["feed_id"] >= 8,
     f"Ø{P['feed_id']:.0f} bore; counter-flow stalls below ~6 mm")
 chk("cap pocket has a real wall",
-    (P["socket_od"] - P["cap_od"] - 2*P["cap_fit"])/2 >= 2.4,
-    f"{(P['socket_od'] - P['cap_od'] - 2*P['cap_fit'])/2:.2f} mm around the pocket")
+    (P["socket_od"] - P["neck_bore_id"])/2 >= 2.4,
+    f"{(P['socket_od'] - P['neck_bore_id'])/2:.2f} mm around the widest bore")
+# The socket is cut for the standards rather than for one measured cap.
+chk("pocket takes every standard cap",
+    P["cap_pocket_id"] - P["cap_rib_d"] <= P["cap_od_max"] + 0.3
+    and P["cap_pocket_id"] >= P["cap_od_max"] + 0.6,
+    f"Ø{P['cap_pocket_id']:.1f} bore, Ø{P['cap_pocket_id'] - P['cap_rib_d']:.1f} "
+    f"across the ribs, for caps Ø{P['cap_od_min']:.1f}-{P['cap_od_max']:.1f}")
+# The ring is WIDER than the cap, so it can never enter the grip. It
+# has to pass in the counterbore, and that is the whole reason for it.
+chk("counterbore clears the neck support ring",
+    (P["neck_bore_id"] - P["neck_ring_d"])/2 >= 0.4,
+    f"{(P['neck_bore_id'] - P['neck_ring_d'])/2:.2f} mm around a "
+    f"Ø{P['neck_ring_d']:.1f} ring")
+# A cap has to clear the support ring to screw on at all, so the ring
+# is ALWAYS at or above the cap's rim. Keeping the ribbed grip no
+# taller than the shortest cap therefore puts it below every ring
+# there can be - an argument from the finish, not a measured gap.
+chk("ribbed grip stops clear below the lowest possible ring",
+    P["cap_h_min"] - P["cap_grip_h"] >= 0.5,
+    f"{P['cap_grip_h']:.1f} mm of ribs, {P['cap_h_min'] - P['cap_grip_h']:.1f} mm "
+    f"below a ring that cannot sit under {P['cap_h_min']:.1f} mm")
+chk("socket bore is deep enough for the tallest cap's ring",
+    P["pocket_depth"] >= P["cap_floor_t"] + P["neck_ring_h"] - 1,
+    f"bore {P['pocket_depth']:.1f} mm deep, PCO-1881 ring lands at "
+    f"{P['cap_floor_t'] + P['neck_ring_h']:.2f} mm")
+chk("socket flare is self-supporting",
+    P["socket_cone_ang"] <= 45,
+    f"{P['socket_cone_ang']:.0f}° from vertical over "
+    f"{P['socket_cone_h']:.1f} mm, Ø{P['feed_od']:.1f} to Ø{P['socket_od']:.1f}")
 chk("socket sits above the seated lid",
     P["socket_cone_z"] >= P["ch_h"] + P["lid_t"],
     f"flare starts {P['socket_cone_z'] - P['ch_h'] - P['lid_t']:.1f} mm above the lid")
@@ -213,8 +241,21 @@ chk("  ...and that test can fail", vol(fit_ctl) > 100,
 
 chk("lid lifts off past the feed column", vol(geom("lift")) < 1.0,
     f"{vol(geom('lift')):.2f} mm3 in the way when slid sideways")
-chk("bottle clears the lid and rim", vol(geom("bottle")) < 1.0,
-    f"Ø{P['bottle_body_d']:.0f} bottle, {vol(geom('bottle')):.2f} mm3 of fouling")
+chk("bottle neck, ring and body clear the socket, lid and rim",
+    vol(geom("bottle")) < 1.0,
+    f"Ø{P['bottle_body_d']:.0f} bottle with a Ø{P['neck_ring_d']:.1f} support "
+    f"ring, {vol(geom('bottle')):.2f} mm3 of fouling")
+# A PCO-1881 ring lands above the socket in free air, so the test above
+# never touches the counterbore. This seats the same neck at the lowest
+# ring the socket claims to take - level with the top of the ribbed grip -
+# which is the worst point of the design envelope, and the case the
+# counterbore exists for.
+chk("counterbore takes a ring as low as the socket claims",
+    vol(geom("ring")) < 1.0,
+    f"ring seated at the top of the grip, {vol(geom('ring')):.2f} mm3 of fouling")
+chk("  ...and that test can fail", vol(geom("ring", 1)) > 20,
+    f"control: filling the counterbore back to a plain pocket traps that "
+    f"ring by {vol(geom('ring', 1)):.0f} mm3")
 chk("module drops in without fouling anything", vol(geom("module")) < 1.0,
     f"Ø{P['mm_module_od']:.0f} x {P['mm_module_h']:.0f} module, "
     f"{vol(geom('module')):.2f} mm3 of fouling")

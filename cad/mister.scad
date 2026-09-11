@@ -111,9 +111,19 @@ module body() {
             // left a solid slug: the bottle could never feed the chamber.
             translate([feed_centre, 0, ch_floor])
                 cylinder(d = feed_id, h = pocket_z - ch_floor + eps);
-            // cap pocket, open at the top
+            // Cap socket, in two diameters. The lower Ø32.4 is a ribbed
+            // grip that any standard cap drops into; above it the bore
+            // opens to Ø34.5 so the bottle's Ø33 neck support ring has
+            // somewhere to go whatever the cap height turns out to be.
+            // The ring is wider than the cap and can never enter the
+            // grip, which is why a single-diameter pocket had to be cut
+            // to one measured cap. Widening as it rises, this costs
+            // nothing in overhang.
             translate([feed_centre, 0, pocket_z])
-                cylinder(d = cap_od + 2*cap_fit, h = pocket_depth + eps);
+                cylinder(d = cap_pocket_id, h = cap_grip_h + eps);
+            translate([feed_centre, 0, pocket_z + cap_grip_h])
+                cylinder(d = neck_bore_id,
+                         h = pocket_depth - cap_grip_h + eps);
             // feed port: teardrop, APEX on the water line, stopping
             // inside the conduit bore and never through its far wall
             translate([feed_port_x0, 0, water_z - feed_port_d/2*1.42])
@@ -146,14 +156,16 @@ module module_lugs() {
                     translate([lug_id/2, 0]) square([lug_w, lug_h + 1]);
 }
 
-// Anti-rotation ribs so the captured cap cannot spin when the
-// bottle is screwed in or out.
+// Anti-rotation ribs, in the grip section only - they must stop
+// below the neck-ring counterbore or they would foul the ring
+// they exist to make room for. They crush 0.2 mm on the widest
+// standard cap and key the epoxy on the narrowest.
 module cap_ribs() {
     for (i = [0 : cap_rib_n - 1])
         translate([feed_centre, 0, pocket_z - 1])
             rotate([0, 0, i*360/cap_rib_n])
-                translate([(cap_od + 2*cap_fit)/2, 0, 0])
-                    cylinder(d = cap_rib_d, h = pocket_depth + 1);
+                translate([cap_pocket_id/2, 0, 0])
+                    cylinder(d = cap_rib_d, h = cap_grip_h + 1);
 }
 
 // ── lid ──────────────────────────────────────────────────────

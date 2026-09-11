@@ -27,11 +27,48 @@ module body_ctl() {
     }
 }
 
-// A full bottle, inverted on the socket. Its shoulder is where the
-// neck reaches full body diameter.
-module bottle() {
-    translate([feed_centre, 0, socket_top + bottle_shoulder])
-        cylinder(d = bottle_body_d, h = 250);
+// A full bottle, inverted on the socket - INCLUDING the neck
+// finish, which is the part that actually has to get past the
+// socket. ISBT PCO-1881 (drawing 3784253-21): Ø27.4 thread, and a
+// Ø33.00 support ring H = 15.24 below the sealing face. That ring
+// is WIDER than the cap, so it can never enter the cap pocket.
+//
+// The old model was a bare cylinder starting ABOVE socket_top. It
+// could not see a neck collision at all, and it passed while a
+// 16.5 mm cap put the support ring 0.26 mm inside the socket.
+//
+// `neck_straight` is the ONE dimension here the drawing does not
+// cover: ISBT specifies the finish down to the support ring and no
+// further. It matches assembly.scad so the harness and the drawing
+// agree. Drop it and the shoulder starts at the ring, which no real
+// bottle does - and which invents a collision at the socket rim.
+// The bottle seats as deep as the cap lets it: its sealing face
+// lands one cap floor above the pocket floor.
+module bottle(rz = -1) {
+    h  = (rz < 0) ? neck_ring_h : rz;     // seal face to support ledge
+    sh = h + 2.5 + neck_straight;         // where the shoulder starts
+    translate([feed_centre, 0, pocket_z + cap_floor_t]) {
+        cylinder(d = 27.4, h = h);                              // threaded neck
+        translate([0, 0, h])
+            cylinder(d = neck_ring_d, h = 2.5);                 // support ring
+        translate([0, 0, h + 2.5])
+            cylinder(d = 25, h = neck_straight);                // transfer bead
+        translate([0, 0, sh])
+            cylinder(d1 = 25, d2 = bottle_body_d, h = bottle_shoulder);
+        translate([0, 0, sh + bottle_shoulder])
+            cylinder(d = bottle_body_d, h = 250);
+    }
+}
+
+// The counterbore back as solid material: the plain single-diameter
+// pocket this design replaced.
+module counterbore_plug() {
+    translate([feed_centre, 0, pocket_z + cap_grip_h])
+        difference() {
+            cylinder(d = neck_bore_id, h = pocket_depth - cap_grip_h);
+            translate([0, 0, -eps])
+                cylinder(d = cap_pocket_id, h = pocket_depth - cap_grip_h + 2*eps);
+        }
 }
 
 // ── 1. WATERTIGHTNESS, as a topology question ────────────────
@@ -84,11 +121,35 @@ else if (TEST == "lift")
     }
 
 // ── 5. THE BOTTLE FITS ───────────────────────────────────────
-// A 0.5 L bottle on the socket must not foul the lid or the rim.
+// A 0.5 L bottle on the socket must not foul the lid, the rim, or
+// - the one this used to miss - the socket itself, with its neck
+// support ring.
 else if (TEST == "bottle")
     intersection() {
         union() { body(); translate([0, 0, ch_h]) lid(); }
         bottle();
+    }
+
+// ── 5b. THE COUNTERBORE EARNS ITS KEEP ───────────────────────
+// A PCO-1881 ring lands ABOVE the socket, in free air, so it does
+// not exercise the counterbore at all. What does is a short neck -
+// a water finish - whose ring sits down inside it.
+//
+// Rather than invent a dimension for a finish I have no drawing
+// for, this seats the SAME neck at the lowest ring that can
+// physically occur: a cap has to clear its own support ring to
+// screw on, so the ring is never below cap_h_min. That is the
+// design envelope, tested at its worst point.
+//
+// CTL fills the counterbore back to the plain single-diameter
+// pocket this design replaced. The Ø33 ring MUST then collide.
+else if (TEST == "ring")
+    intersection() {
+        union() {
+            body();
+            if (CTL) counterbore_plug();
+        }
+        bottle(cap_h_min - cap_floor_t);
     }
 
 // ── 6. THE MODULE FITS ───────────────────────────────────────

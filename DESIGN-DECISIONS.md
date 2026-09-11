@@ -34,6 +34,7 @@ to find out.
 | **D21** | The level is not the port height | holds |
 | **D22** | The assembly model is generated, not drawn | holds |
 | **D23** | A tilted spigot is shorter than it looks | holds |
+| **D24** | The socket is cut for the standard, not for one cap | holds |
 
 If you read only three: **D13** (measuring the real module invalidated the whole
 design), **D15** (the rebuilt design still had eight defects, three fatal) and
@@ -306,9 +307,9 @@ Everything drawn before this is in `cad/superseded/`.
 - **Mounting.** Hang-on-back bracket vs. table stand — deferred deliberately.
   The chamber is mounting-agnostic; the bracket is a separate part, so this
   choice does not block anything.
-- **Cap dimensions.** `cap_od` and `cap_h` are for a standard PET cap and must
-  be **measured on the bottle you will actually use** before printing. They set
-  the pocket, and the pocket is the one joint the Mariotte depends on.
+- ~~**Cap dimensions.**~~ **Settled by [D24](#d24--a-socket-cut-for-the-standard-fits-every-cap-a-measured-one-fits-one)**:
+  the socket is cut for the finish standards instead of for one measured cap,
+  so nothing has to be measured before printing.
 
 ## D15 — The design was audited by boolean, and it did not survive.
 
@@ -513,3 +514,82 @@ one asked whether the thing a human has to attach could be attached. That is a
 recurring shape in this design's history (D15, D16): the checks tested the part
 against itself, and the defect was in the part's relationship to something else.
 The new check models the hose.
+
+## D24 — A socket cut for the standard fits every cap. A measured one fits one.
+
+`cap_od` and `cap_h` were the last two numbers in `params.scad` marked MEASURE,
+and they cut real geometry: the pocket, the anti-rotation ribs, and — through
+`pocket_depth = cap_h + 1` — the height of the socket's top face. Getting them
+wrong meant reprinting a 115 g part. Looking up what caps actually are showed
+the guard was aimed at the wrong number:
+
+```
+  28 mm PCO-1881  soda, 2009-    cap Ø30.4 ±0.3   11-13 mm tall
+  28 mm PCO-1810  soda, older    cap Ø31.0 ±0.4   14-17 mm tall
+  29/25, 30/25    still water    cap Ø29.5-31      8-12 mm tall
+```
+
+**Diameter varies by under 2 mm. Height varies by 9 mm** — and height was the
+one wired into the geometry. ISBT drawing 3784253-21 says why that matters: the
+bottle's **neck support ring is Ø33.00**, sitting **H = 15.24 mm** below the
+sealing face. The ring is *wider than the cap*, so it can never enter a Ø31.7
+pocket; it has to stop on the socket's top face, and that face was pinned to
+cap height:
+
+```
+  cap  9   mm tall  ->  +7.24 mm   OK
+  cap 14   mm tall  ->  +2.24 mm   OK      <- what was drawn
+  cap 16.5 mm tall  ->  -0.26 mm   the bottle cannot seat
+```
+
+The fix is not to measure better. It is to stop the part caring: a **ribbed
+Ø32.4 grip** for the bottom 8 mm, and a **Ø34.5 counterbore** above it that the
+support ring drops into whatever the cap height turns out to be. One body fits
+every finish above, and a hole that widens as it rises adds no overhang, so it
+costs nothing to print. The socket goes Ø38.1 → Ø40.9 and the part grows 2.3 mm.
+
+The grip height is not a measured clearance but an argument from the finish: a
+cap has to clear the support ring to screw on at all, so **the ring is always at
+or above the cap's rim**. A ribbed section no taller than the shortest cap is
+therefore below every ring there can be.
+
+**And the harness could not see any of this.** `checks.scad` modelled the bottle
+as a bare `cylinder(d = bottle_body_d, h = 250)` starting *above* `socket_top` —
+no neck, no support ring — while `assembly.scad` drew the ring correctly for the
+viewer. The two models disagreed, and the gate was using the blind one. It now
+models the real finish. Exactly the lesson of **D15**, found again in the joint
+**D14** called the one the Mariotte depends on.
+
+The first control written for it was itself worthless, which is worth recording.
+It filled the counterbore back in and expected the ring to collide — and it
+reported **0 mm³**, because a PCO-1881 ring lands at 16.74 mm, *above* the 16 mm
+socket top, in free air. The counterbore is for **short** necks, and the test was
+seating a long one. A control that injects a defect the modelled case never
+meets proves nothing at all.
+
+So the envelope is tested instead of a guess: rather than invent a neck height
+for a water finish there is no drawing for, the same neck is seated at the
+**lowest ring that can physically occur**. A cap has to clear its own support
+ring to screw on, so the ring is never below `cap_h_min`. That is the worst
+point the design promises to handle, and filling the counterbore under it does
+collide — by 217 mm³.
+
+That test then failed twice more, both times in the harness rather than the
+part, which is worth recording because both were mine.
+
+**8.24 mm³ at the socket rim, and it was fictitious.** Rewriting `bottle()` had
+quietly dropped the Ø25 × 4.5 straight section that `assembly.scad` has always
+had between the support ring and the shoulder. Without it the shoulder starts
+*at* the ring, so it was Ø35.25 by the time it reached the socket top instead of
+Ø26.86, and fouled a Ø34.5 bore by 0.4 mm. No bottle is shaped like that — a
+filling line's neck grippers need that straight section. The fix was to the
+model, not the socket. `neck_straight` is flagged in `params.scad` as the one
+dimension in the neck the ISBT drawing does not cover.
+
+**And 8.24 mm³ before that, which was not fictitious.** The grip had been set to
+`cap_h_min` exactly, so its top face and the lowest possible ring's underside
+landed on the same z and the Ø33.2 ring came to rest on the Ø32.4 bore's edge —
+0.20 mm of overlap across a 41.2 mm² annulus. The structural argument gave a
+correct *bound* and was then used as if it were a *clearance*. The grip now
+stops 1 mm below it (`cap_grip_margin`), and 7 mm still grips the shortest cap
+over most of its height.

@@ -105,8 +105,10 @@ module bung() {
 module bottle_cap() {
     color("#2f6f3f") difference() {
         cylinder(d = cap_od, h = cap_h);
-        translate([0, 0, 2]) cylinder(d = cap_od - 3.6, h = cap_h);
-        translate([0, 0, -eps]) cylinder(d = 10, h = 4);   // the hole you drill
+        translate([0, 0, cap_floor_t])
+            cylinder(d = cap_od - 3.6, h = cap_h);
+        translate([0, 0, -eps])
+            cylinder(d = 10, h = cap_floor_t + 2);         // the hole you drill
         for (i = [0 : 59]) rotate([0, 0, i*6])             // knurl
             translate([cap_od/2, 0, -eps]) cylinder(d = 0.8, h = cap_h + 2*eps);
     }
@@ -116,15 +118,20 @@ module bottle_cap() {
 // body. Its mouth seats inside the captured cap.
 module bottle() {
     body_h = bottle_ml * 1000 / (PI/4 * bottle_body_d*bottle_body_d);
+    // Neck finish from the params, so the drawing and the harness
+    // cannot disagree about the ring that has to clear the socket.
+    ring_z = neck_ring_h;
+    sh_z   = ring_z + 2.5 + 4.5;
     color(PET) {
-        cylinder(d = 27, h = 17);                        // threaded neck
-        translate([0, 0, 17]) cylinder(d = 33, h = 2.5); // support ring
-        translate([0, 0, 19.5]) cylinder(d = 25, h = 4.5);
-        translate([0, 0, 24])
+        cylinder(d = 27.4, h = ring_z);                       // threaded neck
+        translate([0, 0, ring_z])
+            cylinder(d = neck_ring_d, h = 2.5);               // support ring
+        translate([0, 0, ring_z + 2.5]) cylinder(d = 25, h = 4.5);
+        translate([0, 0, sh_z])
             cylinder(d1 = 25, d2 = bottle_body_d, h = bottle_shoulder);
-        translate([0, 0, 24 + bottle_shoulder])
+        translate([0, 0, sh_z + bottle_shoulder])
             cylinder(d = bottle_body_d, h = body_h);
-        translate([0, 0, 24 + bottle_shoulder + body_h - eps])
+        translate([0, 0, sh_z + bottle_shoulder + body_h - eps])
             cylinder(d1 = bottle_body_d, d2 = bottle_body_d - 14, h = 7);
     }
 }

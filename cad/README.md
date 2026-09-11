@@ -28,16 +28,17 @@ What the module needs: **[../MIST-MAKER.md](../MIST-MAKER.md)**.
 
 | File | Part | Qty | Size | PETG |
 |---|---|---|---|---|
-| `stl/mister_body.stl` | Chamber, feed column, bottle socket | 1 | 98 × 100 × 145 mm | 90 cm³, ~114 g |
+| `stl/mister_body.stl` | Chamber, feed column, bottle socket | 1 | 99 × 100 × 147 mm | 94 cm³, ~119 g |
 | `stl/mister_lid.stl` | Lid with cable gland | 1 | 67 × 68 × 9 mm | 16 cm³, ~20 g |
 | `stl/mister_spacer.stl` | Trim spacer — only if the level lands high, see *Commissioning* | 0–1 | 43 × 43 × 2 mm | 2 cm³, ~3 g |
 
-Total for the build: **~108 cm³, ~137 g of PETG.**
+Total for the build: **~112 cm³, ~142 g of PETG.**
 
 Also needed, not printed:
 
 - A **0.5 L still-water PET bottle** and its cap. Not carbonated — petaloid
-  bases sit crooked, and here it is the **cap** that matters anyway.
+  bases sit crooked. Any standard closure fits: 28 mm PCO-1881 or PCO-1810
+  (soda) and 29/25 or 30/25 (water) are all within the socket's range.
 - A **30 mm or 40 mm fan**, 5 V or 12 V. The pad is drilled for both (24 mm and
   32 mm bolt pitch). 4 × M3 screws.
 - **25 mm ID hose** for the fog line, and a clamp or zip tie. The spigot
@@ -51,7 +52,7 @@ Also needed, not printed:
 ../.venv/bin/python verify.py
 ```
 
-Renders the STLs into `stl/` and runs 48 checks. **It must print `48/48` before
+Renders the STLs into `stl/` and runs 55 checks. **It must print `55/55` before
 anything goes to a printer.** It checks levels against the datasheet band, fits
 and clearances, that the wall is unbreached below the water line, that the lid
 seats *and* comes off, that the feed is actually open end to end, that a hose
@@ -149,9 +150,11 @@ PETG, not PLA — PLA embrittles and creeps in constant water contact.
 
 ## Assembly
 
-1. **Measure your cap** across the knurl and its height. If they are not
-   Ø31 × 14 mm, set `cap_od` / `cap_h` in `params.scad` and re-run `verify.py`
-   before printing. This is the one joint the whole reservoir depends on.
+1. **No measuring needed.** The socket is cut for the finish standards, not
+   for one cap: a ribbed Ø32.4 grip takes any closure from Ø29.5 to Ø31.4, and
+   a Ø34.5 counterbore above it clears the bottle's Ø33 neck support ring
+   whatever the cap height is. 28 mm PCO-1881, PCO-1810 and 29/25 or 30/25
+   water caps all fit the same part — see **D24**.
 2. **Drill the cap** through its flat top, ~Ø10, centred.
 3. **Epoxy the cap into the socket**, drilled face down onto the pocket floor,
    threads up. Six ribs in the pocket stop it turning when the bottle is screwed
