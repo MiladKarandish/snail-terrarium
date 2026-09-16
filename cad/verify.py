@@ -18,8 +18,10 @@ CAD = pathlib.Path(__file__).resolve().parent
 STL = CAD / "stl"; STL.mkdir(exist_ok=True)
 TMP = CAD / ".build"; TMP.mkdir(exist_ok=True)
 
-PARTS = {"mister_body":   ('PART="body"',   False),   # (define, printed upside down)
-         "mister_lid":    ('PART="lid"',    True),
+# (define, flip for the overhang check). Nothing is flipped: mister.scad
+# exports every part already lying in its print orientation.
+PARTS = {"mister_body":   ('PART="body"',   False),
+         "mister_lid":    ('PART="lid"',    False),
          "mister_spacer": ('PART="spacer"', False)}
 
 

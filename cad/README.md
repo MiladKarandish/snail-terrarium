@@ -144,6 +144,9 @@ air presses on the water surface *and* is what enters the port, so it cancels.
 | Perimeters | **≥ 4** | ≥ 3 | ≥ 3 |
 | Infill | ≥ 30 % | ≥ 30 % | ≥ 20 % |
 
+The STLs are exported **already lying in these orientations** — a print service
+slices a file as it is uploaded, so upload them as they are and do not rotate them.
+
 **Perimeters are the setting that matters.** The wall is 1.6 mm, which is
 *exactly* four extrusions at a 0.4 mm nozzle, so at ≥ 4 perimeters it is 100 %
 shell with no infill inside it to weep through. At 2 perimeters the same wall is
@@ -171,8 +174,14 @@ PETG, not PLA — PLA embrittles and creeps in constant water contact.
    tank so condensate drains forward.
 6. **Stand the module** on the chamber floor, inside the four locating lugs, with
    its cable out through one of the gaps between them.
-7. **Thread the cable** up through the lid's hole from underneath, then slide the
-   module's own conical rubber bung down it into the countersink.
+7. **Thread the cable** up through the lid's hole from underneath. The
+   countersink is on the lid's **underside**, so the module's own conical rubber
+   bung seals from *below*: slide it down the cable towards the module first —
+   at Ø14 it will not pass the Ø11.5 hole — then thread the plug up through the
+   lid, and push the bung **up** into the countersink, narrow end first. The fan
+   pressurises the chamber, which presses the bung tighter rather than out. The
+   bung only slides, and the plug stops it coming off the cable, so check which
+   way its narrow end points before you start.
 8. **Fill the chamber** by hand to roughly 45 mm, screw on the filled bottle, and
    seat the lid.
 

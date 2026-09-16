@@ -223,6 +223,10 @@ module spacer() {
     }
 }
 
+// Every part is exported lying the way it prints, because a print
+// service slices the file as uploaded and offers no way to rotate it.
+// The lid is modelled as it sits on the chamber, so it is turned over
+// here - a rotation, never a mirror, or the cable hole would swap sides.
 if      (PART == "body")   body();
-else if (PART == "lid")    lid();
+else if (PART == "lid")    translate([0, 0, lid_t]) rotate([180, 0, 0]) lid();
 else if (PART == "spacer") spacer();
