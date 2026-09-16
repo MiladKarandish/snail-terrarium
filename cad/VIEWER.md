@@ -42,8 +42,6 @@ Needs `openscad` on the PATH and the project's venv (`trimesh`, `numpy`).
    no network. Nothing about it depends on being served over HTTP.
 3. **On the web**, for a phone or to send to someone:
    **<https://snail-terrarium-mister.vercel.app>**. Deployed from `viewer/` — see *Deploying* below.
-   There is also a Claude artifact of the same page at
-   <https://claude.ai/code/artifact/39a16ace-5516-4eab-a32e-9712b58abccf>.
 
 `viewer/index.html` is **committed**, not treated as build output. It is a
 document of the project in its own right: it opens on any machine, years from
@@ -126,12 +124,12 @@ where this design actually sits:
   47.0 ┐
        │ optimal band
   46.0 │ ← the feed port's apex: the level the design aims at
-  43.6 │ ← where it really settles, 2.4 mm lower, because air has to
+  43.5 │ ← where it really settles, 2.5 mm lower, because air has to
   42.0 ┘   bubble into the port before water can leave
   41.0   probe cuts the unit out
 ```
 
-The whole settling range sits inside the optimal band with 2.6 mm of margin over
+The whole settling range sits inside the optimal band with 2.5 mm of margin over
 the probe. That is the reason the target is 46 and not the arithmetic middle of
 the band — see **D21** in [DESIGN-DECISIONS.md](../DESIGN-DECISIONS.md).
 
@@ -223,5 +221,5 @@ full `--render` discards per-part colours altogether. Capping the cut with a rea
 `projection()` cross-section fixes both but costs a CGAL render per part, which
 runs into minutes. WebGL clips per fragment, in colour, live.
 
-**One template for both the local page and the artifact**, so the two cannot
-drift apart. The only difference is whether three.js is inlined or linked.
+**One template for both the offline page and the `--cdn` build**, so the two
+cannot drift apart. The only difference is whether three.js is inlined or linked.

@@ -6,8 +6,9 @@ running [**Climate Panel Pro**](https://github.com/MiladKarandish/esp8266-climat
 firmware. No cloud, no app — the controller serves its own real-time web
 dashboard over WiFi.
 
-> **Status:** design + documentation stage. Hardware is specified; wiring,
-> firmware configuration and tuning are in progress.
+> **Status:** the printed mist chamber is designed, verified (57/57) and being
+> ordered. Hardware is specified; wiring, firmware configuration and tuning are
+> in progress.
 
 ---
 
@@ -179,9 +180,9 @@ snail-terrarium/
     └── superseded/        ← earlier designs, kept for reference. Do not print.
 ```
 
-Build the parts with `../.venv/bin/python cad/verify.py` — it renders the STLs
-into `cad/stl/` and refuses to leave a failing part behind. To see how it all
-goes together, `../.venv/bin/python cad/viewer.py` builds and serves an
+Build the parts with `.venv/bin/python cad/verify.py` — it renders the STLs
+into `cad/stl/`, lying the way they print, and fails loudly on a bad part. To see
+how it all goes together, `.venv/bin/python cad/viewer.py` builds and serves an
 interactive 3D assembly you can orbit, explode and section —
 [cad/VIEWER.md](cad/VIEWER.md). It is live at <https://snail-terrarium-mister.vercel.app>.
 
@@ -194,6 +195,8 @@ Firmware lives in its own repository:
 
 - [x] Define enclosure, species targets and component list
 - [x] Document hardware, wiring and control strategy
+- [x] Design and verify the printed mist chamber ([cad/README.md](cad/README.md))
+- [ ] Print the chamber, leak-test it, assemble and commission the level
 - [ ] Resolve the third-switch gap (mist maker / fan / LED)
 - [ ] Confirm mist maker and fan operating voltages, size the PSU
 - [ ] Bench-test: ESP-01 + SHT31-D + PCF8574 on one I²C bus

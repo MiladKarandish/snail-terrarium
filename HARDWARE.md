@@ -29,6 +29,7 @@ the firmware is the source of truth; this document tracks it.
 |:--:|---|---|
 | 1 | **Ultrasonic mist maker, 550 mL/h** | **24 V DC, 0.75 A (18 W)** — confirmed [ECA 3791](MIST-MAKER.md) |
 | 1 | **Fan** | 5 V or 12 V DC, 0.1–0.3 A (40–80 mm) |
+| 1 | **Mist chamber fan** | **30, 40 or 50 mm**, 5 V or 12 V DC — blows the fog down the hose. Pick on static pressure ([cad/README.md](cad/README.md)). How it is switched is **not decided yet** — see D14 in [DESIGN-DECISIONS.md](DESIGN-DECISIONS.md) |
 | 1 | **Neon LED strip, 1 m** | Analog (**not** WS2812/addressable), 12 V, ~0.5–1 A/m, **IP65+** |
 
 ### Passives & power
@@ -321,7 +322,8 @@ with a single pair of pull-ups.
 6. ☐ 10 kΩ gate pull-down on the LED MOSFET (§7.3).
 7. ☐ **Loads disconnected.** Power up and measure the trigger voltages first.
 8. ☐ Confirm every output reads OFF at rest, then connect the loads one at a time.
-9. ☐ Mist maker reservoir **filled above the minimum line** before its first run.
+9. ☐ Mist chamber filled and its bottle fitted, level settled at **43.5–46 mm** —
+        commissioning in [cad/README.md](cad/README.md).
 10. ☐ Device makes a `ClimatePro-XXXX` hotspot → join it → set your WiFi.
 11. ☐ Open `http://climate-pro.local` → sensor shows plausible numbers.
 12. ☐ Toggle each output manually from the UI and confirm the right load responds.

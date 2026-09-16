@@ -173,9 +173,10 @@ module cap_ribs() {
 }
 
 // ── lid ──────────────────────────────────────────────────────
-// Printed plate-top-down: the spigot rises from the bed, the
-// cable countersink narrows as it rises, and the face that seats
-// on the rim is bed-flat. Not one overhang on the part.
+// Modelled as it sits on the chamber; printed plate-top-down (the
+// part selector at the bottom turns it over). The spigot rises from
+// the bed, the cable countersink WIDENS as it rises, and the face
+// that seats on the rim is a flat top skin. Not one overhang on the part.
 module lid() {
     difference() {
         union() {

@@ -24,7 +24,7 @@ to find out.
 | **D11** | The reservoir outlived its justification | **reversed by D13** |
 | **D12** | Vents and the fog port are in series | holds, as the fan and the nozzle |
 | **D13** | The module was measured, and it invalidated everything | **holds — the pivot** |
-| **D14** | Open questions | live |
+| **D14** | Open questions — mounting, and how the chamber fan is switched | live |
 | **D15** | The design was audited by boolean, and it did not survive | holds |
 | **D16** | A leak is a topology question, not a dimension | holds |
 | **D17** | Nothing that must not leak is left to two cylinders grazing | holds |
@@ -36,6 +36,7 @@ to find out.
 | **D23** | A tilted spigot is shorter than it looks | holds |
 | **D24** | The socket is cut for the standard, not for one cap | holds |
 | **D25** | A chamfer takes the seat away before it takes the overhang | holds |
+| **D26** | The STL is the order, so it is exported the way it prints | holds |
 
 If you read only three: **D13** (measuring the real module invalidated the whole
 design), **D15** (the rebuilt design still had eight defects, three fatal) and
@@ -311,6 +312,17 @@ Everything drawn before this is in `cad/superseded/`.
 - ~~**Cap dimensions.**~~ **Settled by [D24](#d24--a-socket-cut-for-the-standard-fits-every-cap-a-measured-one-fits-one)**:
   the socket is cut for the finish standards instead of for one measured cap,
   so nothing has to be measured before printing.
+- **How the chamber fan is powered and switched.** The pad takes a 30, 40 or
+  50 mm fan (**D25**), but [HARDWARE.md](HARDWARE.md) and
+  [AUTOMATION.md](AUTOMATION.md) only know a separate 40–80 mm tank fan on its
+  own output. Fog is denser than air and the lid is closed, so the chamber fan
+  is what carries it down the hose — it should run whenever the mister does.
+  Three ways, undecided: wired **in parallel with the mister's switch** (no
+  extra output; the fan needs its own voltage from the buck); **one fan doing
+  both jobs** (running it without mist is air exchange through the chamber, but
+  it caps the fan at 50 mm); or **its own output** on the spare P4 (can run on
+  after the mister stops to clear the hose, at the cost of the spare). Nothing
+  printed depends on the answer.
 
 ## D15 — The design was audited by boolean, and it did not survive.
 
@@ -396,9 +408,10 @@ self-supporting while staying perfectly round for the hose. Fog rises into it,
 and condensate runs back into the chamber instead of dripping out of the hose.
 
 The remaining overhang on the whole body is **9.4 mm²** of tessellation facets
-at 48°, around the teardrop screw holes. `verify.py` measures this on the actual
-triangles, in the actual print orientation — the lid is evaluated flipped,
-because it prints plate-top-down.
+at 48°, around the teardrop screw holes (13.9 mm² once **D25** drilled twelve of
+them). `verify.py` measures this on the actual triangles, in the actual print
+orientation. The lid used to be flipped in memory for that; since **D26** the
+STL itself is exported plate-top-down and nothing is flipped.
 
 ## D19 — The cable leaves through the lid.
 
@@ -408,9 +421,11 @@ side of a fog generator: fog leaves through it and runs down the outside.
 MIST-MAKER.md §4 records something the earlier work did not know — the cable
 ships with **a sliding conical rubber bung, 14 mm tapering to 11 mm, meant for a
 chamfered hole**. A hole in the lid is vertical in the print, so it comes out
-round and takes that bung; the countersink narrows as it rises and needs no
-support either. The rim notch, and the matching notch in the lid that had to line
-up with it, are both gone.
+round and takes that bung. The countersink is on the lid's underside, so in the
+plate-top-down print it *widens* as it rises and needs no support either — and
+in use the bung seats from inside the chamber, where the fan's pressure pushes
+it in rather than out. The rim notch, and the matching notch in the lid that had
+to line up with it, are both gone.
 
 ## D20 — The foot exists because the bottle is a lever.
 
@@ -427,15 +442,15 @@ on the same arm and no foot fixes that.
 ## D21 — The level is not the port height.
 
 Air has to break *into* the port as a bubble before water can leave, and that
-costs `4σ/d` of head — **2.4 mm of water on a Ø12 port**. The level therefore
-settles somewhere between the port's apex and 2.4 mm below it.
+costs `4σ/d` of head — **2.5 mm of water on a Ø12 port**. The level therefore
+settles somewhere between the port's apex and 2.5 mm below it.
 
 That is why the port is Ø12 rather than something tidier: the head goes as `1/d`,
 so a narrow port is a level *error*, not a saving. And it is why the target is
 **46 mm rather than the arithmetic centre of the 42–47 band**. Centring the port
-would have put the low end of the real range at 42.5 mm — 1.5 mm from the probe
-cut-off that stops the unit. At 46 the real range is 43.6–46.0, entirely inside
-the band, clearing the probe by 2.6 mm and splashing by 4.0.
+would have put the low end of the real range at 42.0 mm — 1.0 mm from the probe
+cut-off that stops the unit. At 46 the real range is 43.5–46.0, entirely inside
+the band, clearing the probe by 2.5 mm and splashing by 4.0.
 
 The 2 mm trim spacer covers the other direction: fit it under the module if the
 level lands high and the unit spits droplets instead of fog.
@@ -670,3 +685,53 @@ whose control is the part you shipped yesterday is the cheapest one to trust.
 The pattern is the same as **D24**: a feature added for a good reason (there, a
 counterbore; here, a chamfer) quietly consumed something else the design needed,
 and no check was watching the thing it consumed.
+
+## D26 — The STL is the order, so it is exported the way it prints.
+
+**Settled by:** placing the first real order, with
+[digisaaz](https://digisaaz.com).
+
+`verify.py` had always checked the lid's overhangs *flipped*, because it prints
+plate-top-down. But the STL it wrote was the lid as modelled — spigot down, plate
+on top — and the gate passed. The file was right for the harness and wrong for
+the printer. Uploaded as it was, the whole plate would have printed over air:
+
+```
+  lid as exported    3062 mm2 overhanging past 45°
+  lid plate on bed      1 mm2  (the countersink nicking the spigot's top)
+```
+
+A print service slices **the file as uploaded**. This one's order form offers
+exactly five choices and none of them is orientation:
+
+```
+  technology    FDM only
+  layer         300 / 200 / 100 µm
+  material      PETG among seven; black, white or clear
+  infill        a free percentage
+  scale         a percentage
+```
+
+So `mister.scad` now turns the lid over at export, and every STL in `stl/` lies
+the way it prints. It is a rotation about x, not a z-mirror — a mirror would
+move the cable hole to the other side of the feed relief and still pass every
+check. The assembly, section and viewer load `mister.scad` with `use<>`, which
+skips the part selector, so they still see the lid as modelled. `verify.py` no
+longer flips anything: the overhang check now reads the file exactly as it is
+uploaded.
+
+**Perimeters are not on the form either**, and they are what **D9** makes the
+wall watertight with. Infill is, and it was tempting to use it as the fix —
+at 100 % a 2-perimeter wall is solid anyway. The quote said what that costs:
+
+```
+  body at 100 %    145.4 g    2,098,315 toman
+  body at  30 %     99.1 g    1,579,802 toman    -25 %
+```
+
+Most of the body is 1.6 mm wall that is solid at any infill, so the saving is
+real but not dramatic — and 100 % buys watertightness the hard way. The order
+is set at 30 % instead, and the wall count is asked of the service in writing
+before paying. If a service will not commit to ≥ 4 perimeters, the fallback
+is not more infill: brush a thin coat of epoxy inside the chamber up to ~50 mm,
+and leak-test the body overnight on a paper towel before assembling anything.

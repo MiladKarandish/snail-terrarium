@@ -48,7 +48,8 @@ Also needed, not printed:
   1.3 mm of screw wall) and 60 mm will not fit the barrel.
 - **25 mm ID hose** for the fog line, and a clamp or zip tie. The spigot
   gives it **15 mm** of clear seat, with room to clamp behind the end.
-- **Epoxy** for the cap.
+- **Epoxy** for the cap — and, if the service would not confirm ≥ 4 perimeters,
+  a thin coat inside the chamber (see *Assembly*, step 0).
 - **RO or distilled water.** Not optional — see [MIST-MAKER.md §5](../MIST-MAKER.md).
 
 ## Build
@@ -154,10 +155,22 @@ shell with no infill inside it to weep through. At 2 perimeters the same wall is
 infill percentage is set. Ask for 0.2 mm layers rather than 0.1: half the layer
 count, half as many interfaces, each one a potential leak path.
 
+**Ordering from a service.** An online order form typically offers layer height,
+material, colour, infill and scale — and neither perimeters nor orientation.
+Orientation is handled: the STLs already lie the right way. Perimeters are not,
+so **ask the service in writing for ≥ 4 walls on the body before paying**. Do not
+buy watertightness with 100 % infill instead: it costs a third more for the body
+and the epoxy fallback below does the job for nothing — see **D26**.
+
 PETG, not PLA — PLA embrittles and creeps in constant water contact.
 
 ## Assembly
 
+0. **Leak-test the body first.** Fill the chamber to ~50 mm and leave it
+   overnight on a paper towel. A damp spot shows where the wall weeps; brush a
+   thin coat of epoxy inside the chamber up to ~50 mm — floor, wall and around
+   the feed port, but **not into the port** — and test again. Cheaper to find
+   now than after the cap is glued in.
 1. **No measuring needed.** The socket is cut for the finish standards, not
    for one cap: a ribbed Ø32.4 grip takes any closure from Ø29.5 to Ø31.4, and
    a Ø34.5 counterbore above it clears the bottle's Ø33 neck support ring
@@ -199,9 +212,9 @@ Run it with the lid off and watch the water line.
 | Spitting, coarse droplets | Level is high, over ~50 mm | Fit the 2 mm trim spacer under the module |
 | Bottle empties fast, chamber overflows | Air is leaking in past the cap | Re-seal the cap in the socket |
 
-The level should settle between **43.6 and 46.0 mm** measured from the chamber
+The level should settle between **43.5 and 46.0 mm** measured from the chamber
 floor. It sits a little below the port's apex because air has to bubble in
-before water can leave — about 2.4 mm on a Ø12 port. That is designed for; the
+before water can leave — about 2.5 mm on a Ø12 port. That is designed for; the
 whole range is inside the module's 42–47 mm optimum.
 
 The chamber holds **~58 mL** with the module in it — about **6 minutes** of

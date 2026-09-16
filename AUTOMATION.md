@@ -144,7 +144,7 @@ moss, hides, water dish — and run it empty for **7 days**.
 
 | Day | What to check |
 |:--:|---|
-| 1 | Every output responds manually. Nothing is stuck on. Mister reservoir full. |
+| 1 | Every output responds manually. Nothing is stuck on. Mister bottle full and the chamber level settled. |
 | 1 | Sensor reads plausibly: room air ≈ 40–60 %RH before you close the lid. |
 | 2–3 | Humidity settles inside 78–90 % and *stays* there without the mister running constantly. |
 | 3 | No condensation film blocking your view of the whole front glass — that means over-misting. |
@@ -196,7 +196,7 @@ is the single most important test in the whole build.
 | Interval | Task |
 |---|---|
 | Daily | Glance at the dashboard: temp, humidity, output run-times |
-| Weekly | Refill the mist maker reservoir; check for mould; feed and clean |
+| Weekly | Refill the mister's bottle; check for mould; feed and clean |
 | Weekly | Confirm the sensor reading matches a second thermometer/hygrometer |
 | Monthly | Wipe the ultrasonic disc (mineral scale kills output — use distilled water to slow it) |
 | Monthly | Clear the fan of substrate dust |

@@ -46,11 +46,11 @@ water_choke       = 50;    // above this it splatters instead of fogging
 // both sides:
 //   46.0 mm  ->  5.0 mm over the probe, 4.0 mm under splashing
 // and air has to bubble INTO the port to let water out, which costs
-// ~2.4 mm of head on a Ø12 port, so the level actually settles
-// somewhere around 43.6-46.0. That whole range is inside the band,
-// and the low end still clears the probe by 2.6 mm. Targeting the
-// arithmetic centre of the band instead put the low end at 42.5,
-// which is 1.5 mm off shutting the unit down.
+// ~2.5 mm of head on a Ø12 port, so the level actually settles
+// somewhere around 43.5-46.0. That whole range is inside the band,
+// and the low end still clears the probe by 2.5 mm. Targeting the
+// arithmetic centre of the band instead put the low end at 42.0,
+// which is 1.0 mm off shutting the unit down.
 // Earlier revisions held 47 mm, which is the top of the band and
 // 3 mm from choking - no margin at all in the direction that
 // actually stops the fog.
@@ -316,8 +316,9 @@ socket_cone_h     = (socket_od - feed_od)/2 / tan(socket_cone_ang);
 // ── Lid ──────────────────────────────────────────────────────
 // Seats on the chamber rim; a spigot ring locates it in the bore.
 // PRINT PLATE-TOP-DOWN: the spigot rises from the bed, the cable
-// countersink narrows as it rises, and the seating face is
-// bed-flat. There is not one overhang on the part.
+// countersink widens as it rises, and the seating face is a flat
+// top skin. There is not one overhang on the part. mister.scad
+// exports the STL already lying that way.
 lid_t             = 4.0;
 lid_spigot_h      = 5.0;
 lid_spigot_w      = 2.0;
